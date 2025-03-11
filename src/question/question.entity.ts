@@ -1,0 +1,3 @@
+export QuestionEntity as Entity {
+
+}
