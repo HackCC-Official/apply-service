@@ -5,11 +5,13 @@ export class Application {
     @PrimaryGeneratedColumn()
     id : number;
 
-    @Column()
-    question : string;
+    //IsUUID
+    @Column({type: "uuid"})
+    userId : string;
 
     @Column()
-    description : string;
+    questionId : number;
 
-
+    @Column()
+    answer : string;
 }

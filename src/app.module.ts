@@ -6,6 +6,8 @@ import { QuestionService } from './question/question.service';
 import { ApplicationModule } from './application/application.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Question } from './question/question.entity';
+import { Application } from './application/application.entity';
 
 @Module({
     imports: [
@@ -15,6 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         TypeOrmModule.forRoot({
             type: 'postgres',
             url: process.env.DATABASE_URL,
+            entities: [Question, Application],
             synchronize: true,
         }),
         ApplicationModule],
