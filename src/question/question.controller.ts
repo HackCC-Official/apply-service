@@ -4,7 +4,7 @@ import { QuestionResponseDto } from './question.response-dto';
 import { QuestionService } from './question.service';
 import { UpdateResult } from 'typeorm';
 
-@Controller('question')
+@Controller('questions')
 export class QuestionController {
     constructor(
         private questionService: QuestionService

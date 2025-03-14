@@ -3,11 +3,11 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity()
 export class Question {
     @PrimaryGeneratedColumn()
-    id : number
+    id : number;
 
     @Column()
-    prompt : string
+    prompt : string;
 
     @Column()
-    description : string
+    description : string;
 }

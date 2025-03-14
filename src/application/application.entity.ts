@@ -1,17 +1,14 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Status } from "./status.enum";
 
 @Entity()
 export class Application {
-    @PrimaryGeneratedColumn()
-    id : number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    //IsUUID
-    @Column({type: "uuid"})
-    userId : string;
+  @Column()
+  user_id: string;
 
-    @Column()
-    questionId : number;
-
-    @Column()
-    answer : string;
+  @Column()
+  status: Status;
 }

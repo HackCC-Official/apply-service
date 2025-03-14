@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ApplicationService } from './application/application.service';
-import { ApplicationController } from './application/application.controller';
+import { SubmissionService } from './submission/submission.service';
+import { SubmissionController } from './submission/submission.controller';
 import { QuestionController } from './question/question.controller';
 import { QuestionService } from './question/question.service';
-import { ApplicationModule } from './application/application.module';
+import { SubmissionModule } from './submission/submission.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Question } from './question/question.entity';
-import { Application } from './application/application.entity';
+import { Submission } from './submission/submission.entity';
+import { ApplicationModule } from './application/application.module';
+import { ApplicationController } from './application/application.controller';
 
 @Module({
     imports: [
@@ -17,11 +19,13 @@ import { Application } from './application/application.entity';
         TypeOrmModule.forRoot({
             type: 'postgres',
             url: process.env.DATABASE_URL,
-            entities: [Question, Application],
+            entities: [Question, Submission],
             synchronize: true,
         }),
-        ApplicationModule],
-    controllers: [ ApplicationController, QuestionController],
-    providers: [ ApplicationService, QuestionService],
+        SubmissionModule,
+        ApplicationModule
+    ],
+    controllers: [ SubmissionController, QuestionController, ApplicationController],
+    providers: [ SubmissionService, QuestionService],
 })
 export class AppModule {}

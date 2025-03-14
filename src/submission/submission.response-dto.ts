@@ -1,7 +1,7 @@
 import { IsNumber, IsString, IsUUID } from "class-validator";
 import { isStringObject } from "util/types";
 
-export class ApplicationResponseDto {
+export class SubmissionResponseDto {
     @IsNumber()
     id : number;
 
@@ -13,6 +13,4 @@ export class ApplicationResponseDto {
 
     @IsString()
     answer : string;
-
-
 }

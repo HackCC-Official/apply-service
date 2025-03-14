@@ -1,6 +1,6 @@
 import { IsNumber, IsString, IsUUID } from "class-validator";
 
-export class ApplicationRequestDto {
+export class SubmissionRequestDto {
     @IsUUID()
     userId : string;
 

@@ -1,28 +1,31 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { ApplicationService } from './application.service';
-import { ApplicationResponseDto } from './application.response-dto';
-import { ApplicationRequestDto } from './application.request-dto';
-import { UpdateResult } from 'typeorm';
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { ApplicationService } from "./application.service";
+import { ApplicationDTO } from "./application.dto";
+import { DeleteResult } from "typeorm";
 
-@Controller('application')
+@Controller('applications')
 export class ApplicationController {
-    constructor(
-        private applicationService : ApplicationService,
-    ) {}
-    @Get(':id')
-    find(@Param('id') id : number) : Promise<ApplicationResponseDto> {
-        return this.applicationService.find(id);
-    }
-    @Get(':userId')
-    findForm(@Param('userId') userId : string) : Promise<ApplicationResponseDto[]> {
-        return this.applicationService.findForm(userId);
-    }
-    @Post()
-    create(@Body() application : ApplicationRequestDto[]) : Promise<ApplicationResponseDto[]> {
-        return this.applicationService.createForm(application);
-    }
-    @Delete(':userId')
-    delete(@Param('userId') userId : string) : Promise<UpdateResult> {
-        return this.applicationService.deleteForm(userId);
-    }
+  constructor(
+    private applicationService: ApplicationService
+  ) {}
+
+  @Post()
+  create(@Body() application: ApplicationDTO) : Promise<ApplicationDTO> {
+    return this.applicationService.create(application)
+  }
+
+  @Get(':id')
+  find(@Param('id') id: string) : Promise<ApplicationDTO> {
+    return this.applicationService.find(id);
+  }
+
+  @Get()
+  findAll() : Promise<ApplicationDTO[]> {
+    return this.applicationService.findAll()
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) : Promise<DeleteResult> {
+    return this.applicationService.delete(id)
+  }
 }
