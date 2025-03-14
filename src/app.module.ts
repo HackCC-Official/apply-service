@@ -34,8 +34,6 @@ import { Application } from './application/application.entity';
         }),
         SubmissionModule,
         ApplicationModule
-    ],
-    controllers: [ SubmissionController, QuestionController, ApplicationController],
-    providers: [ SubmissionService, QuestionService],
+    ]
 })
 export class AppModule {}
