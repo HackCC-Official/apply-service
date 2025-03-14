@@ -12,7 +12,7 @@ USER node
 
 COPY --chown=node:node . .
 
-EXPOSE 5000
+EXPOSE 3000
 
 CMD [ "npm", "run", "start:prod" ]
 

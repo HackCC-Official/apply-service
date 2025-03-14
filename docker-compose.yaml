@@ -1,0 +1,15 @@
+services:
+  apply-service:
+    image: "ghcr.io/hackcc-official/apply-service:latest"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:3000
+    networks:
+      - hackcc-network
+networks:
+  hackcc-network:
+    external: true
