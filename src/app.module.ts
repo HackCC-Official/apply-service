@@ -11,6 +11,7 @@ import { Submission } from './submission/submission.entity';
 import { ApplicationModule } from './application/application.module';
 import { ApplicationController } from './application/application.controller';
 import { Application } from './application/application.entity';
+import { QuestionModule } from './question/question.module';
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import { Application } from './application/application.entity';
             inject: [ConfigService],
         }),
         SubmissionModule,
+        QuestionModule,
         ApplicationModule
     ]
 })

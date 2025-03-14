@@ -13,7 +13,7 @@ export class SubmissionController {
     find(@Param('id') id : number) : Promise<SubmissionResponseDto> {
         return this.submissionService.find(id);
     }
-    @Get(':userId')
+    @Get('users/:userId')
     findSubmission(@Param('userId') userId : string) : Promise<SubmissionResponseDto[]> {
         return this.submissionService.findForm(userId);
     }

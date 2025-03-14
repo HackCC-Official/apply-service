@@ -6,7 +6,7 @@ export class Question {
     id : number;
 
     @Column()
-    prompt : string;
+    prompt: string;
 
     @Column()
     description : string;

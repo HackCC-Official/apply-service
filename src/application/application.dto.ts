@@ -8,7 +8,7 @@ export class ApplicationDTO {
   id: string;
 
   @IsUUID()
-  user_id: string;
+  userId: string;
 
   @IsEnum(Status)
   status: Status;

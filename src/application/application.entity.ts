@@ -6,8 +6,8 @@ export class Application {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  user_id: string;
+  @Column({ unique: true })
+  userId: string;
 
   @Column()
   status: Status;
