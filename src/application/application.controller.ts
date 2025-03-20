@@ -2,13 +2,11 @@ import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, 
 import { ApplicationService } from "./application.service";
 import { ApplicationDTO } from "./application.dto";
 import { DeleteResult } from "typeorm";
-import { AccountService } from "src/account/account.service";
 import { JwtAuthGuard } from "src/auth/jwt.auth.guard";
 import { AccountRoles } from "src/auth/role.enum";
 import { Roles } from "src/auth/roles.decorator";
 import { RolesGuard } from "src/auth/roles.guard";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
-import { max, of } from "rxjs";
 
 @Controller('applications')
 export class ApplicationController {
@@ -49,6 +47,14 @@ export class ApplicationController {
     return this.applicationService.create(
       application, { resume: files.resume[0], transcript: files.transcript[0] }
     )
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  async update(
+    @Body(new ValidationPipe({ whitelist: true, transform: true })) application: ApplicationDTO,
+  ) : Promise<ApplicationDTO> {
+    return this.applicationService.update(application)
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

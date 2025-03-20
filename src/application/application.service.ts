@@ -65,6 +65,30 @@ export class ApplicationService {
     return application;
   }
 
+  async update(applicationDTO: ApplicationDTO) : Promise<ApplicationDTO> {
+    // check if user_id exists
+    const user = await this.accountService.findById(applicationDTO.userId);
+
+    if (!user) {
+      throw new Error('User with id ' + applicationDTO.userId + ' not found.');
+    }
+
+    const application = await this.applicationRepository.findOne(
+      { 
+        where: { id: applicationDTO.id }, 
+        relations: { submissions: true }
+      }
+    )
+
+    if (!application) {
+      throw new Error('Application with id ' + applicationDTO.id + ' not found.');
+    }
+
+    application.status = applicationDTO.status;
+
+    return await this.applicationRepository.save(application)
+  }
+
   delete(id : string) : Promise<DeleteResult> {
     return this.applicationRepository.delete(id);
   }
