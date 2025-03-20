@@ -5,14 +5,21 @@ import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { ApplicationDTO } from "./application.dto";
 import { AccountService } from "src/account/account.service";
 import { Status } from "./status.enum";
-import { Submission } from "src/submission/submission.entity";
+import { MinioService } from "src/minio-s3/minio.service";
+import { v4 as uuidv4 } from 'uuid';
+
+interface Document {
+  resume: Express.Multer.File;
+  transcript: Express.Multer.File;
+}
 
 @Injectable()
 export class ApplicationService {
   constructor(
     @InjectRepository(Application)
     private applicationRepository: Repository<Application>,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private minioService: MinioService,
   ) {}
 
   async find(id: string): Promise<ApplicationDTO> {
@@ -23,7 +30,12 @@ export class ApplicationService {
     return await this.applicationRepository.find({ where: { submissions: true }});
   }
 
-  async create(applicationDTO: ApplicationDTO) : Promise<ApplicationDTO> {
+  generateFilename(applicationId: string, userId: string, filetype: 'pdf') {
+    const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
+    return `${applicationId}_${userId}_${timestamp}.${filetype}`;
+  }
+
+  async create(applicationDTO: ApplicationDTO, document: Document) : Promise<ApplicationDTO> {
     // check if user_id exists
     const user = await this.accountService.findById(applicationDTO.userId);
 
@@ -31,14 +43,26 @@ export class ApplicationService {
       throw new Error('User with id ' + applicationDTO.userId + ' not found.');
     }
 
+    // give application a UUID
+    applicationDTO.id = uuidv4();
     // default set status to under reveiw
     applicationDTO.status = Status.SUBMITTED;
     // set each userId in submission to the user id
     applicationDTO.submissions.forEach(s => {
       s.userId = user.id;
     });
-    
-    return this.applicationRepository.save(applicationDTO)
+
+    const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
+    await this.minioService.uploadPdf(transcriptFilename, document.transcript.buffer);
+    applicationDTO.transcriptUrl = transcriptFilename
+
+    const resumeFilename = '/resumes/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
+    await this.minioService.uploadPdf(resumeFilename, document.resume.buffer);
+    applicationDTO.resumeUrl = resumeFilename;
+
+    const application = await this.applicationRepository.save(applicationDTO)
+
+    return application;
   }
 
   delete(id : string) : Promise<DeleteResult> {

@@ -4,9 +4,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ApplicationService } from "./application.service";
 import { ApplicationController } from "./application.controller";
 import { AccountModule } from "src/account/account.module";
+import { MinioModule } from "src/minio-s3/minio.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Application]), AccountModule],
+  imports: [TypeOrmModule.forFeature([Application]), AccountModule, MinioModule],
   providers: [ApplicationService],
   controllers: [ApplicationController]
 })

@@ -1,8 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsEnum, IsOptional, IsUUID } from "class-validator";
+import { IsArray, IsEnum, IsOptional, isString, IsString, IsUUID, ValidateNested } from "class-validator";
 import { Status } from "./status.enum";
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import { SubmissionResponseDto } from "src/submission/submission.response-dto";
+import { SubmissionRequestDto } from "src/submission/submission.request-dto";
 
 export class ApplicationDTO {
   @IsOptional()
@@ -20,6 +21,22 @@ export class ApplicationDTO {
   reviewerId?: string;
 
   @IsArray()
-  @Type(() => SubmissionResponseDto)
+  @ValidateNested({ each: true })
+  @Type(() => SubmissionRequestDto)
+  @Transform(({ value }) => {
+    try {
+      return JSON.parse(value); // Automatically parse the stringified JSON
+    } catch (e) {
+      throw new Error('Invalid JSON format in submissions');
+    }
+  })
   submissions: SubmissionResponseDto[];
+
+  @IsOptional()
+  @IsString()
+  transcriptUrl: string;
+
+  @IsOptional()
+  @IsString()
+  resumeUrl: string;
 }

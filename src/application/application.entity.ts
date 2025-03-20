@@ -24,4 +24,10 @@ export class Application {
     }
   )
   submissions: Submission[];
+
+  @Column({ nullable: true })
+  transcriptUrl: string;
+
+  @Column({ nullable: true })
+  resumeUrl: string;
 }
