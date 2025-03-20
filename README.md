@@ -51,6 +51,8 @@ MINIO_ACCESS_SECRET=
 MINIO_ENDPOINT=
 MINIO_PORT=
 MINIO_BUCKET_NAME=
+# account-service-url
+ACCOUNT_SERVICE_URL=
 ```
 
 ## Running the application locally

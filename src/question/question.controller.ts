@@ -18,7 +18,7 @@ export class QuestionController {
     //Get 
     @Get(':id')
     find(@Param('id') id : number) : Promise<QuestionResponseDto> {
-        return this.questionService.find(id);
+        return this.questionService.findById(id);
     }
 
     //Get all

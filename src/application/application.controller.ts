@@ -1,16 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { ApplicationService } from "./application.service";
 import { ApplicationDTO } from "./application.dto";
 import { DeleteResult } from "typeorm";
+import { AccountService } from "src/account/account.service";
+import { JwtAuthGuard } from "src/auth/jwt.auth.guard";
+import { AccountRoles } from "src/auth/role.enum";
+import { Roles } from "src/auth/roles.decorator";
+import { RolesGuard } from "src/auth/roles.guard";
 
 @Controller('applications')
 export class ApplicationController {
   constructor(
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
   ) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Post()
-  create(@Body() application: ApplicationDTO) : Promise<ApplicationDTO> {
+  async create(@Body() application: ApplicationDTO) : Promise<ApplicationDTO> {    
     return this.applicationService.create(application)
   }
 

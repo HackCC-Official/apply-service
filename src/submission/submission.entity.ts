@@ -1,16 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Application } from "src/application/application.entity";
+import { Question } from "src/question/question.entity";
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Submission {
     @PrimaryGeneratedColumn('uuid')
-    id : number;
+    id : string;
     
     @Column({type: "uuid"})
     userId : string;
 
-    @Column()
-    questionId : number;
+    @ManyToMany(() => Question)
+    question: Question;
 
     @Column()
     answer : string;
+
+    @ManyToOne(() => Application, (application) => application.submissions)
+    application: Application;
 }

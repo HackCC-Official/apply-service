@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Status } from "./status.enum";
+import { Submission } from "src/submission/submission.entity";
 
 @Entity()
 export class Application {
@@ -13,5 +14,14 @@ export class Application {
   status: Status;
 
   @Column({ nullable: true })
-  reviewer_id: string;
+  reviewerId: string;
+
+  @OneToMany(
+    () => Submission, 
+    (submission) => submission.application, 
+    {
+      cascade: true
+    }
+  )
+  submissions: Submission[];
 }

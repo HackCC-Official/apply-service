@@ -13,11 +13,24 @@ import { ApplicationController } from './application/application.controller';
 import { Application } from './application/application.entity';
 import { QuestionModule } from './question/question.module';
 import { MinioModule } from './minio-s3/minio.module';
+import { AccountModule } from './account/account.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TokenInterceptor } from './auth/token.interceptor';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
+    providers: [
+    {
+        provide: APP_INTERCEPTOR,
+        useClass: TokenInterceptor,
+    },
+    ],
     imports: [
         ConfigModule.forRoot({
             envFilePath: ['.env', '.env.development'],
+            isGlobal: true
         }),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
@@ -37,7 +50,11 @@ import { MinioModule } from './minio-s3/minio.module';
         SubmissionModule,
         QuestionModule,
         ApplicationModule,
-        MinioModule
+        MinioModule,
+        HttpModule,
+        AccountModule,
+        AuthModule,
+        JwtModule
     ]
 })
 export class AppModule {}

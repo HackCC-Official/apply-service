@@ -12,7 +12,7 @@ export class QuestionService {
         private questionRepository: Repository<Question>,
     ) {}
 
-    find(id: number) : Promise<QuestionResponseDto> {
+    findById(id: number) : Promise<QuestionResponseDto> {
         return this.questionRepository.findOneBy({ id })
     }
     findAll() : Promise<QuestionResponseDto[]> {
