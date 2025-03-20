@@ -23,11 +23,11 @@ export class ApplicationService {
   ) {}
 
   async find(id: string): Promise<ApplicationDTO> {
-    return await this.applicationRepository.findOneBy({ id })
+    return await this.applicationRepository.findOne({ where: { id }, relations: { submissions: true }})
   }
 
   async findAll() : Promise<ApplicationDTO[]> {
-    return await this.applicationRepository.find({ where: { submissions: true }});
+    return await this.applicationRepository.find({ relations: { submissions: true }});
   }
 
   generateFilename(applicationId: string, userId: string, filetype: 'pdf') {

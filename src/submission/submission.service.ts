@@ -16,7 +16,7 @@ export class SubmissionService {
         return this.submissionRepository.save(submission);
     }
     findById(id : string) : Promise<SubmissionResponseDto> {
-        return this.submissionRepository.findOneBy({ id });
+        return this.submissionRepository.findOne({ where: { id }, relations: { question: true }})
     }
     findForm(userId : string) : Promise<SubmissionResponseDto[]> {
         return this.submissionRepository.findBy({ userId: userId, });
