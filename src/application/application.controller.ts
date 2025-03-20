@@ -51,16 +51,22 @@ export class ApplicationController {
     )
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':id')
   find(@Param('id') id: string) : Promise<ApplicationDTO> {
     return this.applicationService.find(id);
   }
-
+  
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get()
   findAll() : Promise<ApplicationDTO[]> {
     return this.applicationService.findAll()
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Delete(':id')
   delete(@Param('id') id: string) : Promise<DeleteResult> {
     return this.applicationService.delete(id)
