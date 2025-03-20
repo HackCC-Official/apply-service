@@ -11,4 +11,7 @@ export class Application {
 
   @Column()
   status: Status;
+
+  @Column({ nullable: true })
+  reviewer_id: string;
 }

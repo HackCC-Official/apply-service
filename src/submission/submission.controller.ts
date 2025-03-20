@@ -6,7 +6,7 @@ import { UpdateResult } from 'typeorm';
 
 @Controller('submissions')
 export class SubmissionController {
-    constructor(
+    constructor(    
         private submissionService : SubmissionService,
     ) {}
     @Get(':id')

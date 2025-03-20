@@ -12,4 +12,8 @@ export class ApplicationDTO {
 
   @IsEnum(Status)
   status: Status;
+
+  @IsOptional()
+  @IsUUID()
+  reviewerId?: string;
 }
