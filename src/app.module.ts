@@ -12,6 +12,7 @@ import { ApplicationModule } from './application/application.module';
 import { ApplicationController } from './application/application.controller';
 import { Application } from './application/application.entity';
 import { QuestionModule } from './question/question.module';
+import { MinioModule } from './minio-s3/minio.module';
 
 @Module({
     imports: [
@@ -35,7 +36,8 @@ import { QuestionModule } from './question/question.module';
         }),
         SubmissionModule,
         QuestionModule,
-        ApplicationModule
+        ApplicationModule,
+        MinioModule
     ]
 })
 export class AppModule {}
