@@ -65,7 +65,7 @@ export class ApplicationService {
     return application;
   }
 
-  async update(applicationDTO: ApplicationDTO) : Promise<ApplicationDTO> {
+  async update(id: string, applicationDTO: ApplicationDTO) : Promise<ApplicationDTO> {
     // check if user_id exists
     const user = await this.accountService.findById(applicationDTO.userId);
 
@@ -75,13 +75,13 @@ export class ApplicationService {
 
     const application = await this.applicationRepository.findOne(
       { 
-        where: { id: applicationDTO.id }, 
+        where: { id }, 
         relations: { submissions: true }
       }
     )
 
     if (!application) {
-      throw new Error('Application with id ' + applicationDTO.id + ' not found.');
+      throw new Error('Application with id ' + id + ' not found.');
     }
 
     application.status = applicationDTO.status;

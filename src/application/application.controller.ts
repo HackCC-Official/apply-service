@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, UploadedFiles, UseGuards, UseInterceptors, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, UploadedFiles, UseGuards, UseInterceptors, ValidationPipe } from "@nestjs/common";
 import { ApplicationService } from "./application.service";
 import { ApplicationDTO } from "./application.dto";
 import { DeleteResult } from "typeorm";
@@ -51,10 +51,14 @@ export class ApplicationController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Put(':id')
   async update(
-    @Body(new ValidationPipe({ whitelist: true, transform: true })) application: ApplicationDTO,
+    @Param('id') id: string,
+    @Body(
+      new ValidationPipe({ whitelist: true, transform: true })
+    ) application: ApplicationDTO,
   ) : Promise<ApplicationDTO> {
-    return this.applicationService.update(application)
+    return this.applicationService.update(id, application)
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -78,3 +82,4 @@ export class ApplicationController {
     return this.applicationService.delete(id)
   }
 }
+
