@@ -24,5 +24,4 @@ export class QuestionService {
     delete(id : number) : Promise<UpdateResult> {
         return this.questionRepository.softDelete(id);
     }
-
 }

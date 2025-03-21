@@ -43,6 +43,8 @@ export class ApplicationService {
       throw new Error('User with id ' + applicationDTO.userId + ' not found.');
     }
 
+    console.log(applicationDTO)
+
     // give application a UUID
     applicationDTO.id = uuidv4();
     // default set status to under reveiw
@@ -50,6 +52,9 @@ export class ApplicationService {
     // set each userId in submission to the user id
     applicationDTO.submissions.forEach(s => {
       s.userId = user.id;
+      if (!s.questionId) {
+        throw new Error('Question is null')
+      }
     });
 
     const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
@@ -83,6 +88,16 @@ export class ApplicationService {
     if (!application) {
       throw new Error('Application with id ' + id + ' not found.');
     }
+
+    // then save details to user (first name and last name)
+    await this.accountService.update(
+      applicationDTO.userId, 
+      {
+        id: '',
+        firstName: application.firstName,
+        lastName: applicationDTO.lastName
+      }
+    )
 
     application.status = applicationDTO.status;
 

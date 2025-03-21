@@ -86,4 +86,29 @@ export class AccountService {
 
     return data
   }
+
+  async update(account_id: string, accountDTO: AccountDTO): Promise<AccountDTO> {
+    const accountServiceUrl = 
+      this.configService.get<string>('ACCOUNT_SERVICE_URL');
+
+    const { data } = await firstValueFrom(
+      this.httpService.put(
+        accountServiceUrl + '/accounts/' + account_id,
+        {
+          headers: {
+            Authorization: this.httpService.axiosRef.defaults.headers.common['Authorization'],
+          },
+          data: accountDTO
+        }
+      )
+      .pipe(
+        catchError((error: AxiosError) => {
+          console.error(error)
+          throw new Error("Error with updating account");
+        })
+      )
+    )
+    
+    return data
+  }
 }

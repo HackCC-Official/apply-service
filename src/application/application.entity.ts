@@ -13,6 +13,21 @@ export class Application {
   @Column()
   status: Status;
 
+  @Column()
+  firstName: string;
+  
+  @Column()
+  lastName: string;
+
+  @Column()
+  email: string;
+
+  @Column()
+  phoneNumber: string;
+
+  @Column()
+  school: string;
+
   @Column({ nullable: true })
   reviewerId: string;
 

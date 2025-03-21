@@ -5,6 +5,17 @@ import { Transform, Type } from "class-transformer";
 import { SubmissionResponseDto } from "src/submission/submission.response-dto";
 import { SubmissionRequestDto } from "src/submission/submission.request-dto";
 
+class SubmisisonApplicationDTO {
+  @IsString()
+  @IsOptional()
+  questionId?: string;
+  @IsString()
+  answer: string;
+  @IsString()
+  @IsOptional()
+  userId?: string;
+}
+
 export class ApplicationDTO {
   @IsOptional()
   @IsUUID()
@@ -16,21 +27,30 @@ export class ApplicationDTO {
   @IsEnum(Status)
   status: Status;
 
+  @IsString()
+  firstName: string;
+
+  @IsString()
+  lastName: string;
+
+  @IsString()
+  email: string;
+
+  @IsString()
+  phoneNumber: string;
+
+  @IsString()
+  school: string;
+
   @IsOptional()
   @IsUUID()
   reviewerId?: string;
 
+  @Transform(({ value }) => JSON.parse(value))
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => SubmissionRequestDto)
-  @Transform(({ value }) => {
-    try {
-      return JSON.parse(value); // Automatically parse the stringified JSON
-    } catch (e) {
-      throw new Error('Invalid JSON format in submissions');
-    }
-  })
-  submissions: SubmissionResponseDto[];
+  @Type(() => SubmisisonApplicationDTO)
+  submissions: SubmisisonApplicationDTO[];
 
   @IsOptional()
   @IsString()
