@@ -1,6 +1,7 @@
 import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class SubmissionRequestDto {
+    @IsOptional()
     @IsString()
     id: string
 

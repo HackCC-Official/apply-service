@@ -26,6 +26,10 @@ export class ApplicationService {
     return await this.applicationRepository.findOne({ where: { id }, relations: { submissions: true }})
   }
 
+  async findByUserId(id: string): Promise<ApplicationDTO> {
+    return await this.applicationRepository.findOne({ where: { userId: id }, relations: { submissions: true }})
+  }
+
   async findAll() : Promise<ApplicationDTO[]> {
     return await this.applicationRepository.find({ relations: { submissions: true }});
   }

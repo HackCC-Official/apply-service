@@ -16,7 +16,7 @@ export class QuestionService {
         return this.questionRepository.findOneBy({ id })
     }
     findAll() : Promise<QuestionResponseDto[]> {
-        return this.questionRepository.find();
+        return this.questionRepository.find({ order: { id: 'ASC' }});
     }
     create(question : QuestionRequestDto[]) : Promise<QuestionResponseDto[]> {
         return this.questionRepository.save(question);

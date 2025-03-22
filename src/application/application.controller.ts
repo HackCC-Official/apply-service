@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, Req, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApplicationService } from "./application.service";
 import { ApplicationDTO } from "./application.dto";
 import { DeleteResult } from "typeorm";
@@ -7,6 +7,8 @@ import { AccountRoles } from "src/auth/role.enum";
 import { Roles } from "src/auth/roles.decorator";
 import { RolesGuard } from "src/auth/roles.guard";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import { containsRole } from "src/auth/utils";
+import { AuthRequest } from "src/auth/auth-request";
 
 @Controller('applications')
 export class ApplicationController {
@@ -68,6 +70,24 @@ export class ApplicationController {
   @Get(':id')
   find(@Param('id') id: string) : Promise<ApplicationDTO> {
     return this.applicationService.find(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Get('/user/:id')
+  findByUserId(
+    @Param('id') id: string,
+    @Req() req: AuthRequest
+  ) : Promise<ApplicationDTO> {
+    const user = req.user;
+
+    const hasPermission = containsRole(user.user_roles, [AccountRoles.ADMIN, AccountRoles.ORGANIZER]);
+    const isTheSameUser = id === user.sub;
+    
+    if (!isTheSameUser && !hasPermission) {
+        throw new Error('no');
+    }
+    return this.applicationService.findByUserId(id);
   }
   
   @UseGuards(JwtAuthGuard, RolesGuard)
