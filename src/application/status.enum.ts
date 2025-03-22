@@ -1,4 +1,5 @@
 export enum Status {
+  CREATED = 'CREATED',
   SUBMITTED = 'SUBMITTED',
   ACCEPTED = 'ACCEPTED',
   DENIED = 'DENIED'

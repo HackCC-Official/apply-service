@@ -9,6 +9,7 @@ import { RolesGuard } from "src/auth/roles.guard";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { containsRole } from "src/auth/utils";
 import { AuthRequest } from "src/auth/auth-request";
+import { Status } from "./status.enum";
 
 @Controller('applications')
 export class ApplicationController {
@@ -75,10 +76,10 @@ export class ApplicationController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get('/user/:id')
-  findByUserId(
+  async findByUserId(
     @Param('id') id: string,
     @Req() req: AuthRequest
-  ) : Promise<ApplicationDTO> {
+  ){
     const user = req.user;
 
     const hasPermission = containsRole(user.user_roles, [AccountRoles.ADMIN, AccountRoles.ORGANIZER]);
@@ -87,7 +88,15 @@ export class ApplicationController {
     if (!isTheSameUser && !hasPermission) {
         throw new Error('no');
     }
-    return this.applicationService.findByUserId(id);
+    const application = await this.applicationService.findByUserId(id);
+    if (!application) {
+      return {
+        status: Status.CREATED
+      }
+    }
+    return {
+      status: application.status
+    }
   }
   
   @UseGuards(JwtAuthGuard, RolesGuard)
