@@ -70,6 +70,15 @@ export class ApplicationService {
     applicationDTO.resumeUrl = resumeFilename;
 
     const application = await this.applicationRepository.save(applicationDTO)
+    // then save details to user (first name and last name)
+    await this.accountService.update(
+      applicationDTO.userId, 
+      {
+        id: '',
+        firstName: application.firstName,
+        lastName: applicationDTO.lastName
+      }
+    )
 
     return application;
   }
@@ -92,16 +101,6 @@ export class ApplicationService {
     if (!application) {
       throw new Error('Application with id ' + id + ' not found.');
     }
-
-    // then save details to user (first name and last name)
-    await this.accountService.update(
-      applicationDTO.userId, 
-      {
-        id: '',
-        firstName: application.firstName,
-        lastName: applicationDTO.lastName
-      }
-    )
 
     application.status = applicationDTO.status;
 
