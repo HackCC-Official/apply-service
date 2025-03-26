@@ -59,6 +59,10 @@ export class ApplicationService {
       if (!s.questionId) {
         throw new Error('Question is null')
       }
+
+      if (s.answer.length > 500) {
+        throw new Error('Answer is too long')
+      }
     });
 
     const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');

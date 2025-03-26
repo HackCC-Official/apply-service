@@ -48,7 +48,6 @@ export class ApplicationController {
     @Body() application: ApplicationDTO,
     @UploadedFiles() files: { resume: Express.Multer.File[], transcript: Express.Multer.File[] }
   ) : Promise<ApplicationDTO> {
-    console.log(application)
     return this.applicationService.create(
       application, { resume: files.resume[0], transcript: files.transcript[0] }
     )
