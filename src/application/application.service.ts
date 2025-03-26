@@ -16,6 +16,7 @@ interface Document {
 @Injectable()
 export class ApplicationService {
   maxWordLength = 500;
+  maxCharLength = 3000;
 
   constructor(
     @InjectRepository(Application)
@@ -42,6 +43,10 @@ export class ApplicationService {
   }
 
   largerThanMaxWordLength(text: string) {
+    if (text.length > this.maxCharLength) {
+      return false
+    }
+
     const len = text.split(/[\s]+/);
     if(len.length > this.maxWordLength){
         return false;
