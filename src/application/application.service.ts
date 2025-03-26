@@ -15,6 +15,8 @@ interface Document {
 
 @Injectable()
 export class ApplicationService {
+  maxWordLength = 500;
+
   constructor(
     @InjectRepository(Application)
     private applicationRepository: Repository<Application>,
@@ -39,6 +41,14 @@ export class ApplicationService {
     return `${applicationId}_${userId}_${timestamp}.${filetype}`;
   }
 
+  largerThanMaxWordLength(text: string) {
+    const len = text.split(/[\s]+/);
+    if(len.length > this.maxWordLength){
+        return false;
+      }
+    return true;
+  }
+
   async create(applicationDTO: ApplicationDTO, document: Document) : Promise<ApplicationDTO> {
     // check if user_id exists
     const user = await this.accountService.findById(applicationDTO.userId);
@@ -60,7 +70,7 @@ export class ApplicationService {
         throw new Error('Question is null')
       }
 
-      if (s.answer.length > 500) {
+      if (this.largerThanMaxWordLength(s.answer)) {
         throw new Error('Answer is too long')
       }
     });
