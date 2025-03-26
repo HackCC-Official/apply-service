@@ -42,16 +42,16 @@ export class ApplicationService {
     return `${applicationId}_${userId}_${timestamp}.${filetype}`;
   }
 
-  largerThanMaxWordLength(text: string) {
+  isValidResponse(text: string) {
     if (text.length > this.maxCharLength) {
-      return false
+      return true;
     }
 
     const len = text.split(/[\s]+/);
     if(len.length > this.maxWordLength){
-        return false;
+        return true;
       }
-    return true;
+    return false;
   }
 
   async create(applicationDTO: ApplicationDTO, document: Document) : Promise<ApplicationDTO> {
@@ -75,7 +75,7 @@ export class ApplicationService {
         throw new Error('Question is null')
       }
 
-      if (this.largerThanMaxWordLength(s.answer)) {
+      if (this.isValidResponse(s.answer)) {
         throw new Error('Answer is too long')
       }
     });
