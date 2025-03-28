@@ -43,14 +43,15 @@ export class ApplicationService {
   }
 
   isValidResponse(text: string) {
-    if (text.length > this.maxCharLength) {
+    if (text.length < this.maxCharLength) {
       return true;
     }
 
     const len = text.split(/[\s]+/);
-    if(len.length > this.maxWordLength){
+    if(len.length < this.maxWordLength){
         return true;
       }
+      
     return false;
   }
 
@@ -61,8 +62,6 @@ export class ApplicationService {
     if (!user) {
       throw new Error('User with id ' + applicationDTO.userId + ' not found.');
     }
-
-    console.log(applicationDTO)
 
     // give application a UUID
     applicationDTO.id = uuidv4();
@@ -75,7 +74,9 @@ export class ApplicationService {
         throw new Error('Question is null')
       }
 
-      if (this.isValidResponse(s.answer)) {
+      console.log(this.isValidResponse(s.answer), s.answer)
+
+      if (!this.isValidResponse(s.answer)) {
         throw new Error('Answer is too long')
       }
     });
