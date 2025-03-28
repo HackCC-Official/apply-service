@@ -62,8 +62,6 @@ export class ApplicationService {
       throw new Error('User with id ' + applicationDTO.userId + ' not found.');
     }
 
-    console.log(applicationDTO)
-
     // give application a UUID
     applicationDTO.id = uuidv4();
     // default set status to under reveiw
@@ -75,7 +73,7 @@ export class ApplicationService {
         throw new Error('Question is null')
       }
 
-      if (this.isValidResponse(s.answer)) {
+      if (!this.isValidResponse(s.answer)) {
         throw new Error('Answer is too long')
       }
     });
