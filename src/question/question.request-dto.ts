@@ -40,4 +40,12 @@ export class QuestionRequestDto {
     @IsOptional()
     @IsString()
     isSingleLabel?: boolean;
+
+    @IsOptional()
+    @IsString()
+    placeholder: string;
+
+    @IsOptional()
+    @IsString()
+    name: string;
 }

@@ -36,4 +36,12 @@ export class QuestionResponseDto {
     @IsOptional()
     @IsString()
     isSingleLabel?: boolean;
+
+    @IsOptional()
+    @IsString()
+    placeholder: string;
+
+    @IsOptional()
+    @IsString()
+    name: string;
 }

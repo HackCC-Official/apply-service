@@ -29,4 +29,10 @@ export class Question {
 
     @Column({ nullable: true })
     isSingleLabel?: boolean;
+
+    @Column({ nullable: true })
+    placeholder: string;
+
+    @Column({ nullable: true })
+    name: string;
 }
