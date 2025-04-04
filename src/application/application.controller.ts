@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, Req, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, Query, Req, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApplicationService } from "./application.service";
 import { ApplicationRequestDTO, ApplicationResponseDTO } from "./application.dto";
 import { DeleteResult } from "typeorm";
@@ -132,11 +132,12 @@ export class ApplicationController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get()
-  async findAll() : Promise<ApplicationResponseDTO[]> {
-    const applications = await this.applicationService.findAll();
+  async findAll(
+    @Query("status") status: Status
+  ) : Promise<ApplicationResponseDTO[]> {
+    const applications = await this.applicationService.findAll({ status });
     const userIds = applications.map(a => (a.userId))
-    console.log(userIds)
-    const users = await this.accountService.batchFindById(userIds)
+    const users = userIds.length > 0 ? await this.accountService.batchFindById(userIds) : []
     const userMap = {}
 
     users.forEach(u => userMap[u.id] = u)
@@ -147,8 +148,6 @@ export class ApplicationController {
         userMap[a.userId]
       )
     })
-
-    console.log(applicationResponseDTOs, userIds)
 
     return applicationResponseDTOs
   }

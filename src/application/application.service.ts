@@ -34,8 +34,12 @@ export class ApplicationService {
     return await this.applicationRepository.findOne({ where: { userId: id }, relations: { submissions: true }})
   }
 
-  async findAll() : Promise<Application[]> {
-    return await this.applicationRepository.find({ relations: { submissions: true }});
+  async findAll({ status } : { status : Status }) : Promise<Application[]> {
+    if (!status) {
+      return await this.applicationRepository.find({ relations: { submissions: true }});
+    }
+    console.log(status)
+    return await this.applicationRepository.find({ where: { status }, relations: { submissions: true }});
   }
 
   generateFilename(applicationId: string, userId: string, filetype: 'pdf') {
