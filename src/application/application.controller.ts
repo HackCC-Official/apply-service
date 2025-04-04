@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, Req, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApplicationService } from "./application.service";
-import { ApplicationDTO } from "./application.dto";
+import { ApplicationRequestDTO, ApplicationResponseDTO } from "./application.dto";
 import { DeleteResult } from "typeorm";
 import { JwtAuthGuard } from "src/auth/jwt.auth.guard";
 import { AccountRoles } from "src/auth/role.enum";
@@ -10,11 +10,13 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { containsRole } from "src/auth/utils";
 import { AuthRequest } from "src/auth/auth-request";
 import { Status } from "./status.enum";
+import { AccountService } from "src/account/account.service";
 
 @Controller('applications')
 export class ApplicationController {
   constructor(
     private applicationService: ApplicationService,
+    private accountService: AccountService
   ) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -45,11 +47,16 @@ export class ApplicationController {
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   async create(
-    @Body() application: ApplicationDTO,
+    @Body() applicationDTO: ApplicationRequestDTO,
     @UploadedFiles() files: { resume: Express.Multer.File[], transcript: Express.Multer.File[] }
-  ) : Promise<ApplicationDTO> {
-    return this.applicationService.create(
-      application, { resume: files.resume[0], transcript: files.transcript[0] }
+  ) : Promise<ApplicationResponseDTO> {
+    const user = await this.accountService.findById(applicationDTO.userId)
+    const application = await this.applicationService.create(
+      applicationDTO, { resume: files.resume[0], transcript: files.transcript[0] }
+    )
+    return this.applicationService.convertToApplicationResponseDTO(
+      application,
+      user
     )
   }
 
@@ -60,16 +67,26 @@ export class ApplicationController {
     @Param('id') id: string,
     @Body(
       new ValidationPipe({ whitelist: true, transform: true })
-    ) application: ApplicationDTO,
-  ) : Promise<ApplicationDTO> {
-    return this.applicationService.update(id, application)
+    ) applicationDTO: ApplicationRequestDTO,
+  ) : Promise<ApplicationResponseDTO> {
+    const user = await this.accountService.findById(applicationDTO.userId)
+    const application = await this.applicationService.update(id, applicationDTO);
+    return this.applicationService.convertToApplicationResponseDTO(
+      application,
+      user
+    )
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':id')
-  find(@Param('id') id: string) : Promise<ApplicationDTO> {
-    return this.applicationService.find(id);
+  async find(@Param('id') id: string) : Promise<ApplicationResponseDTO> {
+    const application = await this.applicationService.findById(id);
+    const user = await this.accountService.findById(application.userId)
+    return this.applicationService.convertToApplicationResponseDTO(
+      application,
+      user
+    )
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -97,12 +114,43 @@ export class ApplicationController {
       status: application.status
     }
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Get(":id")
+  async findById(
+    @Param("id") id: string
+  ) : Promise<ApplicationResponseDTO> {
+    const application = await this.applicationService.findById(id);
+    const user = await this.accountService.findById(application.userId);
+    return this.applicationService.convertToApplicationResponseDTO(
+      application,
+      user
+    )
+  }
   
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get()
-  findAll() : Promise<ApplicationDTO[]> {
-    return this.applicationService.findAll()
+  async findAll() : Promise<ApplicationResponseDTO[]> {
+    const applications = await this.applicationService.findAll();
+    const userIds = applications.map(a => (a.userId))
+    console.log(userIds)
+    const users = await this.accountService.batchFindById(userIds)
+    const userMap = {}
+
+    users.forEach(u => userMap[u.id] = u)
+
+    const applicationResponseDTOs = applications.map(a => {
+      return this.applicationService.convertToApplicationResponseDTO(
+        a,
+        userMap[a.userId]
+      )
+    })
+
+    console.log(applicationResponseDTOs, userIds)
+
+    return applicationResponseDTOs
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -2,11 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Application } from "./application.entity";
 import { DeleteResult, Repository, UpdateResult } from "typeorm";
-import { ApplicationDTO } from "./application.dto";
+import { ApplicationRequestDTO, ApplicationResponseDTO } from "./application.dto";
 import { AccountService } from "src/account/account.service";
 import { Status } from "./status.enum";
 import { MinioService } from "src/minio-s3/minio.service";
 import { v4 as uuidv4 } from 'uuid';
+import { AccountDTO } from "src/account/account.dto";
 
 interface Document {
   resume: Express.Multer.File;
@@ -25,15 +26,15 @@ export class ApplicationService {
     private minioService: MinioService,
   ) {}
 
-  async find(id: string): Promise<ApplicationDTO> {
+  async findById(id: string): Promise<Application> {
     return await this.applicationRepository.findOne({ where: { id }, relations: { submissions: true }})
   }
 
-  async findByUserId(id: string): Promise<ApplicationDTO> {
+  async findByUserId(id: string): Promise<Application> {
     return await this.applicationRepository.findOne({ where: { userId: id }, relations: { submissions: true }})
   }
 
-  async findAll() : Promise<ApplicationDTO[]> {
+  async findAll() : Promise<Application[]> {
     return await this.applicationRepository.find({ relations: { submissions: true }});
   }
 
@@ -55,7 +56,7 @@ export class ApplicationService {
     return false;
   }
 
-  async create(applicationDTO: ApplicationDTO, document: Document) : Promise<ApplicationDTO> {
+  async create(applicationDTO: ApplicationRequestDTO, document: Document) : Promise<Application> {
     // check if user_id exists
     const user = await this.accountService.findById(applicationDTO.userId);
 
@@ -103,7 +104,7 @@ export class ApplicationService {
     return application;
   }
 
-  async update(id: string, applicationDTO: ApplicationDTO) : Promise<ApplicationDTO> {
+  async update(id: string, applicationDTO: ApplicationRequestDTO) : Promise<Application> {
     // check if user_id exists
     const user = await this.accountService.findById(applicationDTO.userId);
 
@@ -129,5 +130,21 @@ export class ApplicationService {
 
   delete(id : string) : Promise<DeleteResult> {
     return this.applicationRepository.delete(id);
+  }
+
+  convertToApplicationResponseDTO(application: Application, user: AccountDTO): ApplicationResponseDTO {
+    return {
+      id: application.id,
+      firstName: application.firstName,
+      lastName: application.lastName,
+      user,
+      status: application.status,
+      email: application.email,
+      phoneNumber: application.phoneNumber,
+      school: application.school,
+      submissions: application.submissions,
+      transcriptUrl: application.transcriptUrl,
+      resumeUrl: application.resumeUrl
+    }
   }
 }

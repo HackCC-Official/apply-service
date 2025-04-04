@@ -4,6 +4,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { Observable, catchError, firstValueFrom } from "rxjs";
 import { AccountDTO } from "./account.dto";
 import { ConfigService } from "@nestjs/config";
+import qs from 'qs'
 
 @Injectable()
 export class AccountService {
@@ -73,7 +74,19 @@ export class AccountService {
           },
           params: {
             account_ids
-          }
+          },
+          paramsSerializer: (params) => {
+            const searchParams = new URLSearchParams()
+            for (const key in params) {
+              const value = params[key]
+              if (Array.isArray(value)) {
+                searchParams.append(key, value.join(','))
+              } else {
+                searchParams.append(key, value)
+              }
+            }
+            return searchParams.toString()
+          },
         }
       )
       .pipe(
