@@ -10,7 +10,7 @@ export class Submission {
     @Column({type: "uuid"})
     userId : string;
 
-    @ManyToMany(() => Question)
+    @ManyToOne(() => Question)
     question: Question;
 
     @Column()

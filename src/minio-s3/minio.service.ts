@@ -15,4 +15,12 @@ export class MinioService {
       file
     )
   }
+
+  async generatePresignedURL(filename: string): Promise<string> {
+    return await this.minioClient.presignedGetObject(
+      process.env.MINIO_BUCKET_NAME,
+      filename.substring(1),
+      3600
+    )
+  }
 }

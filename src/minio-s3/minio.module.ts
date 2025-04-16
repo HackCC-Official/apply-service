@@ -6,7 +6,7 @@ import { MinioService } from "./minio.service";
   imports: [
     NestMinioModule.register({
       isGlobal: true,
-      useSSL: false,
+      useSSL: Boolean(process.env.MINIO_USE_SSL),
       endPoint: process.env.MINIO_ENDPOINT,
       port: Number(process.env.MINIO_PORT),
       accessKey: process.env.MINIO_ACCESS_KEY,
