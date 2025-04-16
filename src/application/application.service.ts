@@ -8,6 +8,9 @@ import { Status } from "./status.enum";
 import { MinioService } from "src/minio-s3/minio.service";
 import { v4 as uuidv4 } from 'uuid';
 import { AccountDTO } from "src/account/account.dto";
+import { Question } from "src/question/question.entity";
+import { SubmissionService } from "src/submission/submission.service";
+import { QuestionService } from "src/question/question.service";
 
 interface Document {
   resume: Express.Multer.File;
@@ -38,7 +41,6 @@ export class ApplicationService {
     if (!status) {
       return await this.applicationRepository.find({ relations: { submissions: true }});
     }
-    console.log(status)
     return await this.applicationRepository.find({ where: { status }, relations: { submissions: true }});
   }
 
@@ -73,18 +75,20 @@ export class ApplicationService {
     // default set status to under reveiw
     applicationDTO.status = Status.SUBMITTED;
     // set each userId in submission to the user id
-    applicationDTO.submissions.forEach(s => {
+    applicationDTO.submissions.forEach(async s => {
       s.userId = user.id;
+      s.question = { id: s.questionId } as Question;
+
       if (!s.questionId) {
         throw new Error('Question is null')
       }
-
-      console.log(this.isValidResponse(s.answer), s.answer)
 
       if (!this.isValidResponse(s.answer)) {
         throw new Error('Answer is too long')
       }
     });
+
+
 
     const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
     await this.minioService.uploadPdf(transcriptFilename, document.transcript.buffer);
@@ -95,7 +99,8 @@ export class ApplicationService {
     applicationDTO.resumeUrl = resumeFilename;
 
     const application = await this.applicationRepository.save(applicationDTO)
-    // then save details to user (first name and last name)
+
+
     await this.accountService.update(
       applicationDTO.userId, 
       {

@@ -11,12 +11,14 @@ import { containsRole } from "src/auth/utils";
 import { AuthRequest } from "src/auth/auth-request";
 import { Status } from "./status.enum";
 import { AccountService } from "src/account/account.service";
+import { MinioService } from "src/minio-s3/minio.service";
 
 @Controller('applications')
 export class ApplicationController {
   constructor(
     private applicationService: ApplicationService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private minioService: MinioService
   ) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -83,6 +85,8 @@ export class ApplicationController {
   async find(@Param('id') id: string) : Promise<ApplicationResponseDTO> {
     const application = await this.applicationService.findById(id);
     const user = await this.accountService.findById(application.userId)
+    application.resumeUrl = await this.minioService.generatePresignedURL(application.resumeUrl)
+    application.transcriptUrl = await this.minioService.generatePresignedURL(application.transcriptUrl)
     return this.applicationService.convertToApplicationResponseDTO(
       application,
       user

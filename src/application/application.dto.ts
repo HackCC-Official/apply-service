@@ -5,11 +5,14 @@ import { Transform, Type } from "class-transformer";
 import { SubmissionResponseDto } from "src/submission/submission.response-dto";
 import { SubmissionRequestDto } from "src/submission/submission.request-dto";
 import { AccountDTO } from "src/account/account.dto";
+import { Question } from "src/question/question.entity";
 
 class SubmisisonApplicationDTO {
   @IsString()
   @IsOptional()
-  questionId?: string;
+  questionId?: number;
+  @IsOptional()
+  question: Question;
   @IsString()
   answer: string;
   @IsString()

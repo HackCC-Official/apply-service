@@ -8,6 +8,7 @@ import { QuestionModule } from 'src/question/question.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Submission])],
   providers: [SubmissionService],
-  controllers: [SubmissionController]
+  controllers: [SubmissionController],
+  exports: [SubmissionService]
 })
 export class SubmissionModule {}
