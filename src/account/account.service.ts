@@ -107,11 +107,11 @@ export class AccountService {
     const { data } = await firstValueFrom(
       this.httpService.put(
         accountServiceUrl + '/accounts/' + account_id,
+        accountDTO,
         {
           headers: {
             Authorization: this.httpService.axiosRef.defaults.headers.common['Authorization'],
           },
-          data: accountDTO
         }
       )
       .pipe(
