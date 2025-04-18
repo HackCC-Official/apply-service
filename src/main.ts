@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { BadRequestLoggingFilter } from './exceptions/bad-exception.filter';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         bufferLogs: true
     });
+
+    app.useGlobalFilters(new BadRequestLoggingFilter());
 
     app.setGlobalPrefix(process.env.NODE_ENV === 'production' ? 'apply-service' : '')
 
