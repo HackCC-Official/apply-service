@@ -9,8 +9,7 @@ import { MinioService } from "src/minio-s3/minio.service";
 import { v4 as uuidv4 } from 'uuid';
 import { AccountDTO } from "src/account/account.dto";
 import { Question } from "src/question/question.entity";
-import { SubmissionService } from "src/submission/submission.service";
-import { QuestionService } from "src/question/question.service";
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 interface Document {
   resume: Express.Multer.File;
@@ -25,6 +24,8 @@ export class ApplicationService {
   constructor(
     @InjectRepository(Application)
     private applicationRepository: Repository<Application>,
+    @InjectPinoLogger(AccountService.name)
+    private readonly logger: PinoLogger,
     private accountService: AccountService,
     private minioService: MinioService,
   ) {}
@@ -65,6 +66,7 @@ export class ApplicationService {
   async create(applicationDTO: ApplicationRequestDTO, document: Document) : Promise<Application> {
     // check if user_id exists
     const user = await this.accountService.findById(applicationDTO.userId);
+    this.logger.info("Attempting to create application", applicationDTO)
 
     if (!user) {
       throw new Error('User with id ' + applicationDTO.userId + ' not found.');
@@ -99,6 +101,8 @@ export class ApplicationService {
     applicationDTO.resumeUrl = resumeFilename;
 
     const application = await this.applicationRepository.save(applicationDTO)
+
+    this.logger.info("Application created", application)
 
 
     await this.accountService.update(
