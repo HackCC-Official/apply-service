@@ -19,6 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TokenInterceptor } from './auth/token.interceptor';
 import { HttpModule } from '@nestjs/axios';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
     providers: [
@@ -28,6 +29,15 @@ import { HttpModule } from '@nestjs/axios';
     },
     ],
     imports: [
+        LoggerModule.forRoot({
+            pinoHttp: {
+              autoLogging: false,
+              quietReqLogger: true,
+              transport: {
+                target: 'pino-pretty',
+              },
+            },
+          }),
         ConfigModule.forRoot({
             envFilePath: ['.env', '.env.development'],
             isGlobal: true
