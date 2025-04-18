@@ -36,7 +36,16 @@ export class ApplicationController {
         fileSize: 1000000 * 25,
       },
       fileFilter: (req, file, callback) => {
-        const allowedMimes = ['application/pdf', 'application/x-pdf', 'application/acrobat'];
+        const allowedMimes = [
+          'application/pdf',
+          'application/x-pdf',
+          'application/acrobat',
+          'applications/vnd.pdf',
+          'application/x-download',
+          'application/download',
+          'text/pdf',
+          'text/x-pdf'
+        ];
         if (
           !allowedMimes.includes(file.mimetype) ||
           !file.originalname.match(/\.pdf$/)
