@@ -63,14 +63,8 @@ export class ApplicationService {
     return false;
   }
 
-  async create(applicationDTO: ApplicationRequestDTO, document: Document) : Promise<Application> {
-    // check if user_id exists
-    const user = await this.accountService.findById(applicationDTO.userId);
-    this.logger.info("Attempting to create application", applicationDTO)
-
-    if (!user) {
-      throw new Error('User with id ' + applicationDTO.userId + ' not found.');
-    }
+  async create(applicationDTO: ApplicationRequestDTO, document: Document, user: AccountDTO) : Promise<Application> {
+    this.logger.info({ msg: "Attempting to create application", applicationDTO })
 
     // give application a UUID
     applicationDTO.id = uuidv4();
@@ -102,7 +96,7 @@ export class ApplicationService {
 
     const application = await this.applicationRepository.save(applicationDTO)
 
-    this.logger.info("Application created", application)
+    this.logger.info({ msg: "Application created", application })
 
 
     await this.accountService.update(
@@ -118,13 +112,6 @@ export class ApplicationService {
   }
 
   async update(id: string, applicationDTO: ApplicationRequestDTO) : Promise<Application> {
-    // check if user_id exists
-    const user = await this.accountService.findById(applicationDTO.userId);
-
-    if (!user) {
-      throw new Error('User with id ' + applicationDTO.userId + ' not found.');
-    }
-
     const application = await this.applicationRepository.findOne(
       { 
         where: { id }, 

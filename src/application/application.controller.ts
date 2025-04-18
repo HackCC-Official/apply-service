@@ -12,13 +12,16 @@ import { AuthRequest } from "src/auth/auth-request";
 import { Status } from "./status.enum";
 import { AccountService } from "src/account/account.service";
 import { MinioService } from "src/minio-s3/minio.service";
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 
 @Controller('applications')
 export class ApplicationController {
   constructor(
     private applicationService: ApplicationService,
     private accountService: AccountService,
-    private minioService: MinioService
+    private minioService: MinioService,
+    @InjectPinoLogger(AccountService.name)
+    private readonly logger: PinoLogger,
   ) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -46,15 +49,20 @@ export class ApplicationController {
       },
     },
   ))
+
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   async create(
     @Body() applicationDTO: ApplicationRequestDTO,
     @UploadedFiles() files: { resume: Express.Multer.File[], transcript: Express.Multer.File[] }
   ) : Promise<ApplicationResponseDTO> {
+    
     const user = await this.accountService.findById(applicationDTO.userId)
+    if (!user) {
+      throw new Error('User with id ' + applicationDTO.userId + ' not found.');
+    }
     const application = await this.applicationService.create(
-      applicationDTO, { resume: files.resume[0], transcript: files.transcript[0] }
+      applicationDTO, { resume: files.resume[0], transcript: files.transcript[0] }, user
     )
     return this.applicationService.convertToApplicationResponseDTO(
       application,
@@ -72,6 +80,9 @@ export class ApplicationController {
     ) applicationDTO: ApplicationRequestDTO,
   ) : Promise<ApplicationResponseDTO> {
     const user = await this.accountService.findById(applicationDTO.userId)
+    if (!user) {
+      throw new Error('User with id ' + applicationDTO.userId + ' not found.');
+    }
     const application = await this.applicationService.update(id, applicationDTO);
     return this.applicationService.convertToApplicationResponseDTO(
       application,
