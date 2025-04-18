@@ -48,7 +48,7 @@ export class ApplicationController {
         ];
         if (
           !allowedMimes.includes(file.mimetype) ||
-          !file.originalname.match(/\.pdf$/)
+          !file.originalname.match(/\.pdf$/i)
         ) {
           return callback(
             new BadRequestException('Only PDF files are allowed. File details: ' + JSON.stringify(file)),
