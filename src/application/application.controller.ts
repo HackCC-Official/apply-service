@@ -36,12 +36,13 @@ export class ApplicationController {
         fileSize: 1000000 * 25,
       },
       fileFilter: (req, file, callback) => {
+        const allowedMimes = ['application/pdf', 'application/x-pdf', 'application/acrobat'];
         if (
-          file.mimetype !== 'application/pdf' ||
+          !allowedMimes.includes(file.mimetype) ||
           !file.originalname.match(/\.pdf$/)
         ) {
           return callback(
-            new BadRequestException('Only PDF files are allowed.'),
+            new BadRequestException('Only PDF files are allowed. File details: ' + JSON.stringify(file)),
             false,
           );
         }
@@ -49,7 +50,6 @@ export class ApplicationController {
       },
     },
   ))
-
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   async create(
