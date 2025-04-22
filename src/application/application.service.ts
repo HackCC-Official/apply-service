@@ -51,12 +51,12 @@ export class ApplicationService {
   }
 
   isValidResponse(text: string) {
-    if (text.length < this.maxCharLength) {
+    if (text.length <= this.maxCharLength) {
       return true;
     }
 
     const len = text.split(/[\s]+/);
-    if(len.length < this.maxWordLength){
+    if(len.length <= this.maxWordLength){
         return true;
       }
       
@@ -111,7 +111,7 @@ export class ApplicationService {
     return application;
   }
 
-  async update(id: string, applicationDTO: ApplicationRequestDTO) : Promise<Application> {
+  async updateStatus(id: string, status: Status) : Promise<Application> {
     const application = await this.applicationRepository.findOne(
       { 
         where: { id }, 
@@ -123,7 +123,7 @@ export class ApplicationService {
       throw new Error('Application with id ' + id + ' not found.');
     }
 
-    application.status = applicationDTO.status;
+    application.status = status;
 
     return await this.applicationRepository.save(application)
   }
@@ -131,6 +131,7 @@ export class ApplicationService {
   delete(id : string) : Promise<DeleteResult> {
     return this.applicationRepository.delete(id);
   }
+  
 
   convertToApplicationResponseDTO(application: Application, user: AccountDTO): ApplicationResponseDTO {
     return {

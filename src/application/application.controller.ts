@@ -81,18 +81,22 @@ export class ApplicationController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
-  @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body(
-      new ValidationPipe({ whitelist: true, transform: true })
-    ) applicationDTO: ApplicationRequestDTO,
-  ) : Promise<ApplicationResponseDTO> {
-    const user = await this.accountService.findById(applicationDTO.userId)
-    if (!user) {
-      throw new Error('User with id ' + applicationDTO.userId + ' not found.');
-    }
-    const application = await this.applicationService.update(id, applicationDTO);
+  @Put(':id/accept')
+  async acceptApplication(@Param('id') id: string) : Promise<ApplicationResponseDTO> {
+    const application = await this.applicationService.updateStatus(id, Status.ACCEPTED);
+    const user = await this.accountService.findById(application.userId)
+    return this.applicationService.convertToApplicationResponseDTO(
+      application,
+      user
+    )
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Put(':id/deny')
+  async denyApplication(@Param('id') id: string) : Promise<ApplicationResponseDTO> {
+    const application = await this.applicationService.updateStatus(id, Status.DENIED);
+    const user = await this.accountService.findById(application.userId)
     return this.applicationService.convertToApplicationResponseDTO(
       application,
       user
