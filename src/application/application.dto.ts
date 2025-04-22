@@ -109,3 +109,9 @@ export class ApplicationRequestDTO {
   @IsString()
   resumeUrl: string;
 }
+
+export class ApplicationStatistics {
+  accepted: number;
+  denied: number;
+  submitted: number;
+}

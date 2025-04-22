@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, Query, Req, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApplicationService } from "./application.service";
-import { ApplicationRequestDTO, ApplicationResponseDTO } from "./application.dto";
+import { ApplicationRequestDTO, ApplicationResponseDTO, ApplicationStatistics } from "./application.dto";
 import { DeleteResult } from "typeorm";
 import { JwtAuthGuard } from "src/auth/jwt.auth.guard";
 import { AccountRoles } from "src/auth/role.enum";
@@ -23,6 +23,13 @@ export class ApplicationController {
     @InjectPinoLogger(AccountService.name)
     private readonly logger: PinoLogger,
   ) {}
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Get("stats")
+  async getStats() : Promise<ApplicationStatistics> {
+    return this.applicationService.getStatistics();
+  }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])

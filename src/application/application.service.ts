@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Application } from "./application.entity";
 import { DeleteResult, Repository, UpdateResult } from "typeorm";
-import { ApplicationRequestDTO, ApplicationResponseDTO } from "./application.dto";
+import { ApplicationRequestDTO, ApplicationResponseDTO, ApplicationStatistics } from "./application.dto";
 import { AccountService } from "src/account/account.service";
 import { Status } from "./status.enum";
 import { MinioService } from "src/minio-s3/minio.service";
@@ -43,6 +43,17 @@ export class ApplicationService {
       return await this.applicationRepository.find({ relations: { submissions: true }});
     }
     return await this.applicationRepository.find({ where: { status }, relations: { submissions: true }});
+  }
+
+  async getStatistics() : Promise<ApplicationStatistics> {
+    return await this.applicationRepository
+      .createQueryBuilder("application")
+      .select([
+        `SUM(CASE WHEN application.status = 'SUBMITTED' THEN 1 ELSE 0 END) AS submitted`,
+        `SUM(CASE WHEN application.status = 'DENIED' THEN 1 ELSE 0 END) AS denied`,
+        `SUM(CASE WHEN application.status = 'ACCEPTED' THEN 1 ELSE 0 END) AS accepted`,
+      ])
+      .getRawOne();
   }
 
   generateFilename(applicationId: string, userId: string, filetype: 'pdf') {
