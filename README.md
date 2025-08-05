@@ -2,8 +2,7 @@
 
 ## Overview
 
-The aply service for HackCC 2025. Its main purpose is to handle applications
-
+The apply service for HackCC 2025. Its main purpose is to handle applications
 
 The application built with [Nest.js](https://nestjs.com/). For other libraries or tools, the list of documentation below should be referenced:
 - [Docker Compose](https://docs.docker.com/compose/intro/compose-application-model/)
