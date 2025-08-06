@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Application } from "./application.entity";
+import { Application, ApplicationType } from "./application.entity";
 import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { ApplicationRequestDTO, ApplicationResponseDTO, ApplicationStatistics } from "./application.dto";
 import { AccountService } from "src/account/account.service";
@@ -34,15 +34,15 @@ export class ApplicationService {
     return await this.applicationRepository.findOne({ where: { id }, relations: { submissions: true }})
   }
 
-  async findByUserId(id: string): Promise<Application> {
-    return await this.applicationRepository.findOne({ where: { userId: id }, relations: { submissions: true }})
+  async findByUserId(id: string, type: ApplicationType): Promise<Application> {
+    return await this.applicationRepository.findOne({ where: { userId: id, type }, relations: { submissions: true }})
   }
 
-  async findAll({ status } : { status : Status }) : Promise<Application[]> {
+  async findAll({ type, status } : { type: ApplicationType, status : Status }) : Promise<Application[]> {
     if (!status) {
-      return await this.applicationRepository.find({ relations: { submissions: true }});
+      return await this.applicationRepository.find({ where: { type}, relations: { submissions: true }});
     }
-    return await this.applicationRepository.find({ where: { status }, relations: { submissions: true }});
+    return await this.applicationRepository.find({ where: { type, status }, relations: { submissions: true }});
   }
 
   async getStatistics() : Promise<ApplicationStatistics> {
@@ -74,7 +74,12 @@ export class ApplicationService {
     return false;
   }
 
-  async create(applicationDTO: ApplicationRequestDTO, document: Document, user: AccountDTO) : Promise<Application> {
+  async create(
+    applicationDTO: ApplicationRequestDTO,
+    document: Document, 
+    type: ApplicationType,
+    user: AccountDTO
+  ) : Promise<Application> {
     this.logger.info({ msg: "Attempting to create application", applicationDTO })
 
     // give application a UUID
@@ -95,8 +100,6 @@ export class ApplicationService {
       }
     });
 
-
-
     const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
     await this.minioService.uploadPdf(transcriptFilename, document.transcript.buffer);
     applicationDTO.transcriptUrl = transcriptFilename
@@ -105,10 +108,12 @@ export class ApplicationService {
     await this.minioService.uploadPdf(resumeFilename, document.resume.buffer);
     applicationDTO.resumeUrl = resumeFilename;
 
-    const application = await this.applicationRepository.save(applicationDTO)
+    const application = await this.applicationRepository.save({
+      ...applicationDTO,
+      type
+    })
 
     this.logger.info({ msg: "Application created", application })
-
 
     await this.accountService.update(
       applicationDTO.userId, 
