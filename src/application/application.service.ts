@@ -156,7 +156,8 @@ export class ApplicationService {
       school: application.school,
       submissions: application.submissions,
       transcriptUrl: application.transcriptUrl,
-      resumeUrl: application.resumeUrl
+      resumeUrl: application.resumeUrl,
+      type: application.type
     }
   }
 }

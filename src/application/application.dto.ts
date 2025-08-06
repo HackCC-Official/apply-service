@@ -20,6 +20,12 @@ class SubmisisonApplicationDTO {
   userId?: string;
 }
 
+export enum ApplicationType {
+  HACKATHON = 'HACKATHON',
+  ORGANIZER_VOLUNTEER = 'ORGANIZER_VOLUNTEER',
+  JUDGE = 'JUDGE'
+}
+
 export class ApplicationResponseDTO {
   @IsOptional()
   @IsUUID()
