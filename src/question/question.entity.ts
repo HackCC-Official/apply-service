@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { QuestionType } from "./question-type.enum";
+import { ApplicationType } from "src/application/application.entity";
 
 @Entity()
 export class Question {
@@ -35,4 +36,7 @@ export class Question {
 
     @Column({ nullable: true })
     name: string;
+
+    @Column()
+    applicationType: ApplicationType;
 }
