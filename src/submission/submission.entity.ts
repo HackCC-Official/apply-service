@@ -1,4 +1,4 @@
-import { Application } from "src/application/application.entity";
+import { Application, ApplicationType } from "src/application/application.entity";
 import { Question } from "src/question/question.entity";
 import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -18,4 +18,7 @@ export class Submission {
 
     @ManyToOne(() => Application, (application) => application.submissions)
     application: Application;
+
+    @Column()
+    applicationType: ApplicationType;
 }

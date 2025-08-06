@@ -1,8 +1,8 @@
 import { Type } from "class-transformer";
-import { IsNumber, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsString, IsUUID } from "class-validator";
+import { ApplicationType } from "src/application/application.entity";
 import { QuestionRequestDto } from "src/question/question.request-dto";
 import { QuestionResponseDto } from "src/question/question.response-dto";
-import { isStringObject } from "util/types";
 
 export class SubmissionResponseDto {
     @IsUUID()
@@ -16,4 +16,7 @@ export class SubmissionResponseDto {
 
     @IsString()
     answer: string;
+
+    @IsEnum(ApplicationType)
+    applicationType: ApplicationType
 }
