@@ -4,7 +4,8 @@ import { Submission } from "src/submission/submission.entity";
 
 export enum ApplicationType {
   HACKATHON = 'HACKATHON',
-  ORGANIZER_VOLUNTEER = 'ORGANIZER_VOLUNTEER',
+  ORGANIZER = 'ORGANIZER',
+  VOLUNTEER = 'VOLUNTEER',
   JUDGE = 'JUDGE'
 }
 @Entity()
