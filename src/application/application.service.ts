@@ -82,6 +82,13 @@ export class ApplicationService {
   ) : Promise<Application> {
     this.logger.info({ msg: "Attempting to create application", applicationDTO })
 
+    // check for existence
+    const applicationExists = this.findByUserId(user.id, type)
+
+    if (applicationExists) {
+      throw new Error('Application already exists')
+    }
+
     // give application a UUID
     applicationDTO.id = uuidv4();
     // default set status to under reveiw
