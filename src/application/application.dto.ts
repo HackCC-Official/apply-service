@@ -6,6 +6,7 @@ import { SubmissionResponseDto } from "src/submission/submission.response-dto";
 import { SubmissionRequestDto } from "src/submission/submission.request-dto";
 import { AccountDTO } from "src/account/account.dto";
 import { Question } from "src/question/question.entity";
+import { ApplicationType } from "./application.entity";
 
 class SubmisisonApplicationDTO {
   @IsString()
@@ -18,12 +19,6 @@ class SubmisisonApplicationDTO {
   @IsString()
   @IsOptional()
   userId?: string;
-}
-
-export enum ApplicationType {
-  HACKATHON = 'HACKATHON',
-  ORGANIZER_VOLUNTEER = 'ORGANIZER_VOLUNTEER',
-  JUDGE = 'JUDGE'
 }
 
 export class ApplicationResponseDTO {
@@ -69,6 +64,9 @@ export class ApplicationResponseDTO {
   @IsOptional()
   @IsString()
   resumeUrl: string;
+
+  @IsEnum(ApplicationType)
+  type: ApplicationType;
 }
 
 export class ApplicationRequestDTO {
