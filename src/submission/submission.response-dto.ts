@@ -18,5 +18,5 @@ export class SubmissionResponseDto {
     answer: string;
 
     @IsEnum(ApplicationType)
-    applicationType: ApplicationType
+    applicationType: ApplicationType;
 }
