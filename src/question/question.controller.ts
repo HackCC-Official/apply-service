@@ -45,13 +45,6 @@ export class QuestionController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
-    @Get(':id')
-    find(@Param('id') id : number) : Promise<QuestionResponseDto> {
-        return this.questionService.findById(id);
-    }
-
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
     @Get('hackathon')
     findAllHackathonQuestion() : Promise<QuestionResponseDto[]> {
         return this.questionService.findAll(ApplicationType.HACKATHON);
@@ -76,6 +69,13 @@ export class QuestionController {
     @Get('judge')
     findAllJudgeQuestion() : Promise<QuestionResponseDto[]> {
         return this.questionService.findAll(ApplicationType.JUDGE);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+    @Get(':id')
+    find(@Param('id') id : number) : Promise<QuestionResponseDto> {
+        return this.questionService.findById(id);
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)

@@ -37,6 +37,8 @@ export class Question {
     @Column({ nullable: true })
     name: string;
 
-    @Column()
+    @Column({
+    type: 'text',
+    })
     applicationType: ApplicationType;
 }

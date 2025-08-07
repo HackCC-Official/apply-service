@@ -18,7 +18,7 @@ export class SubmissionService {
     }
 
     findForm(userId : string, applicationType: ApplicationType) : Promise<SubmissionResponseDto[]> {
-        return this.submissionRepository.findBy({ userId: userId, applicationType });
+        return this.submissionRepository.find({ where: { userId: userId, applicationType } });
     }
 
     findAll(applicationType: ApplicationType) : Promise<SubmissionResponseDto[]> {
