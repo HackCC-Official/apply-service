@@ -20,6 +20,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TokenInterceptor } from './auth/token.interceptor';
 import { HttpModule } from '@nestjs/axios';
 import { LoggerModule } from 'nestjs-pino';
+import { AccountProducerModule } from './account-producer/account-producer.module';
 
 @Module({
     providers: [
@@ -63,6 +64,7 @@ import { LoggerModule } from 'nestjs-pino';
         MinioModule,
         HttpModule,
         AccountModule,
+        AccountProducerModule,
         AuthModule,
         JwtModule
     ]

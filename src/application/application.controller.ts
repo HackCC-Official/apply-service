@@ -14,6 +14,7 @@ import { AccountService } from "src/account/account.service";
 import { MinioService } from "src/minio-s3/minio.service";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { ApplicationType } from "./application.entity";
+import { AccountProducerService } from "src/account-producer/account-producer.service";
 
 @Controller('applications')
 export class ApplicationController {
@@ -21,6 +22,7 @@ export class ApplicationController {
     private applicationService: ApplicationService,
     private accountService: AccountService,
     private minioService: MinioService,
+    private accountProducerService: AccountProducerService,
     @InjectPinoLogger(AccountService.name)
     private readonly logger: PinoLogger,
   ) {}
@@ -118,6 +120,8 @@ export class ApplicationController {
   async acceptApplication(@Param('id') id: string): Promise<ApplicationResponseDTO> {
     const application = await this.applicationService.updateStatus(id, Status.ACCEPTED);
     const user = await this.accountService.findById(application.userId);
+    // send to account queue for qr-code creation
+    this.accountProducerService.addCreatedAccountToAccountQueue(user);
     return this.applicationService.convertToApplicationResponseDTO(
       application,
       user
