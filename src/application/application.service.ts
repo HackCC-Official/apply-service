@@ -45,15 +45,20 @@ export class ApplicationService {
     return await this.applicationRepository.find({ where: { type, status }, relations: { submissions: true }});
   }
 
-  async getStatistics() : Promise<ApplicationStatistics> {
-    return await this.applicationRepository
-      .createQueryBuilder("application")
-      .select([
-        `SUM(CASE WHEN application.status = 'SUBMITTED' THEN 1 ELSE 0 END) AS submitted`,
-        `SUM(CASE WHEN application.status = 'DENIED' THEN 1 ELSE 0 END) AS denied`,
-        `SUM(CASE WHEN application.status = 'ACCEPTED' THEN 1 ELSE 0 END) AS accepted`,
-      ])
-      .getRawOne();
+async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStatistics> {
+  const queryBuilder = this.applicationRepository
+    .createQueryBuilder("application")
+    .select([
+      `SUM(CASE WHEN application.status = 'SUBMITTED' THEN 1 ELSE 0 END) AS submitted`,
+      `SUM(CASE WHEN application.status = 'DENIED' THEN 1 ELSE 0 END) AS denied`,
+      `SUM(CASE WHEN application.status = 'ACCEPTED' THEN 1 ELSE 0 END) AS accepted`,
+    ]);
+
+  if (applicationType) {
+    queryBuilder.where("application.type = :type", { type: applicationType });
+  }
+
+  return await queryBuilder.getRawOne();
   }
 
   generateFilename(applicationId: string, userId: string, filetype: 'pdf') {
@@ -83,7 +88,7 @@ export class ApplicationService {
     this.logger.info({ msg: "Attempting to create application", applicationDTO })
 
     // check for existence
-    const applicationExists = this.findByUserId(user.id, type)
+    const applicationExists = await this.findByUserId(user.id, type)
 
     if (applicationExists) {
       throw new Error('Application already exists')
@@ -93,6 +98,7 @@ export class ApplicationService {
     applicationDTO.id = uuidv4();
     // default set status to under reveiw
     applicationDTO.status = Status.SUBMITTED;
+
     // set each userId in submission to the user id
     applicationDTO.submissions.forEach(async s => {
       s.userId = user.id;
