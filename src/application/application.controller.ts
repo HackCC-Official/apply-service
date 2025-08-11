@@ -103,7 +103,7 @@ export class ApplicationController {
     
     const application = await this.applicationService.create(
       applicationDTO, 
-      { resume: files.resume[0], transcript: files.transcript[0] }, 
+      { resume: files.resume[0], transcript: applicationType === ApplicationType.JUDGE ? undefined : files.transcript[0] }, 
       applicationType,
       user
     );
@@ -202,7 +202,7 @@ export class ApplicationController {
     const application = await this.applicationService.findById(id);
     const user = await this.accountService.findById(application.userId);
     application.resumeUrl = await this.minioService.generatePresignedURL(application.resumeUrl);
-    application.transcriptUrl = await this.minioService.generatePresignedURL(application.transcriptUrl);
+    application.transcriptUrl = application.transcriptUrl ? await this.minioService.generatePresignedURL(application.transcriptUrl) : '';
     return this.applicationService.convertToApplicationResponseDTO(
       application,
       user

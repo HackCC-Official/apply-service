@@ -13,7 +13,7 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 interface Document {
   resume: Express.Multer.File;
-  transcript: Express.Multer.File;
+  transcript?: Express.Multer.File;
 }
 
 @Injectable()
@@ -113,9 +113,14 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
       }
     });
 
-    const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
-    await this.minioService.uploadPdf(transcriptFilename, document.transcript.buffer);
-    applicationDTO.transcriptUrl = transcriptFilename
+    if (type !== ApplicationType.JUDGE) {
+      const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
+      await this.minioService.uploadPdf(transcriptFilename, document.transcript.buffer);
+      applicationDTO.transcriptUrl = transcriptFilename
+    } else {
+      applicationDTO.transcriptUrl = ''
+    }
+
 
     const resumeFilename = '/resumes/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
     await this.minioService.uploadPdf(resumeFilename, document.resume.buffer);
