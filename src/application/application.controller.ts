@@ -168,7 +168,7 @@ export class ApplicationController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
-  @Get('user/:id')
+  @Get(':type/user/:id')
   async findApplicationByUserIdAndType(
     @Param('type') type: string,
     @Param('id') id: string,
