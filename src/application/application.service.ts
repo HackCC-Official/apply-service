@@ -128,11 +128,14 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
     } else {
       applicationDTO.resumeUrl = ''
     }
+<<<<<<< HEAD
 
 
     const resumeFilename = '/resumes/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
     await this.minioService.uploadPdf(resumeFilename, document.resume.buffer);
     applicationDTO.resumeUrl = resumeFilename;
+=======
+>>>>>>> main
 
     const application = await this.applicationRepository.save({
       ...applicationDTO,

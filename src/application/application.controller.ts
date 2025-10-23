@@ -103,7 +103,11 @@ export class ApplicationController {
     
     const application = await this.applicationService.create(
       applicationDTO, 
+<<<<<<< HEAD
       { resume: applicationType === ApplicationType.HACKATHON ? files.resume[0] : undefined, transcript: applicationType === ApplicationType.JUDGE ? undefined : files.transcript[0] }, 
+=======
+      { resume: applicationType === ApplicationType.HACKATHON ? undefined : files.resume[0], transcript: applicationType === ApplicationType.JUDGE ? undefined : files.transcript[0] }, 
+>>>>>>> main
       applicationType,
       user
     );
@@ -201,7 +205,7 @@ export class ApplicationController {
   async find(@Param('id') id: string): Promise<ApplicationResponseDTO> {
     const application = await this.applicationService.findById(id);
     const user = await this.accountService.findById(application.userId);
-    application.resumeUrl = await this.minioService.generatePresignedURL(application.resumeUrl);
+    application.resumeUrl = application.resumeUrl ? await this.minioService.generatePresignedURL(application.resumeUrl) : '';
     application.transcriptUrl = application.transcriptUrl ? await this.minioService.generatePresignedURL(application.transcriptUrl) : '';
     return this.applicationService.convertToApplicationResponseDTO(
       application,
