@@ -201,7 +201,7 @@ export class ApplicationController {
   async find(@Param('id') id: string): Promise<ApplicationResponseDTO> {
     const application = await this.applicationService.findById(id);
     const user = await this.accountService.findById(application.userId);
-    application.resumeUrl = await this.minioService.generatePresignedURL(application.resumeUrl);
+    application.resumeUrl = application.resumeUrl ? await this.minioService.generatePresignedURL(application.resumeUrl) : '';
     application.transcriptUrl = application.transcriptUrl ? await this.minioService.generatePresignedURL(application.transcriptUrl) : '';
     return this.applicationService.convertToApplicationResponseDTO(
       application,
