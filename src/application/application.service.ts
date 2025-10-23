@@ -121,6 +121,14 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
       applicationDTO.transcriptUrl = ''
     }
 
+    if (type !== ApplicationType.HACKATHON) {
+      const resumeFilename = '/resumes/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
+      await this.minioService.uploadPdf(resumeFilename, document.resume.buffer);
+      applicationDTO.resumeUrl = resumeFilename;
+    } else {
+      applicationDTO.resumeUrl = ''
+    }
+
 
     const resumeFilename = '/resumes/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
     await this.minioService.uploadPdf(resumeFilename, document.resume.buffer);
