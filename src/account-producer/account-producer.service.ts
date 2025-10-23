@@ -42,4 +42,7 @@ export class AccountProducerService {
       );
     }
   }
+
+  // QUEUE CALLED
+  // APPLICATION.ACCEPTED
 }
