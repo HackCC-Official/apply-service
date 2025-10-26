@@ -7,10 +7,10 @@ import { AccountModule } from "src/account/account.module";
 import { MinioModule } from "src/minio-s3/minio.module";
 import { SubmissionModule } from "src/submission/submission.module";
 import { QuestionModule } from "src/question/question.module";
-import { AccountProducerModule } from "src/account-producer/account-producer.module";
+import { ApplicationProducerModule } from "src/application-producer/application-producer.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Application]), AccountModule, MinioModule, AccountProducerModule],
+  imports: [TypeOrmModule.forFeature([Application]), AccountModule, MinioModule, ApplicationProducerModule],
   providers: [ApplicationService],
   controllers: [ApplicationController]
 })
