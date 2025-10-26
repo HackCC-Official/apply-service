@@ -18,8 +18,8 @@ export class ApplicationProducerService implements OnModuleInit {
     this.channelWrapper = connection.createChannel({
       setup: async (channel: Channel) => {
 
-        const exchange = this.configService.get<string>('APPLICATION_EXCHANGE') || 'application.exchange';
-        const queue = this.configService.get<string>('APPLICATION_QUEUE') || 'application.queue';
+        const exchange = this.configService.get<string>('APPLICATION_EXCHANGE');
+        const queue = this.configService.get<string>('APPLICATION_QUEUE');
         const routingKey = 'application.accepted';
 
         // Create exchange
@@ -44,7 +44,7 @@ export class ApplicationProducerService implements OnModuleInit {
 
 
   async publishAcceptedApplication(application: ApplicationResponseDTO) {
-    const exchange = this.configService.get<string>('APPLICATION_EXCHANGE') || 'application.exchange';
+    const exchange = this.configService.get<string>('APPLICATION_EXCHANGE');
     const routingKey = 'application.accepted';
     try {
       await this.channelWrapper.publish(
