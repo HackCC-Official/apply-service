@@ -17,7 +17,6 @@ export class ApplicationProducerService implements OnModuleInit {
     const connection = amqp.connect([this.configService.get<string>('RABBITMQ_URL')]);
     this.channelWrapper = connection.createChannel({
       setup: async (channel: Channel) => {
-
         const exchange = this.configService.get<string>('APPLICATION_EXCHANGE');
         const queue = this.configService.get<string>('APPLICATION_QUEUE');
         const routingKey = 'application.accepted';
@@ -46,6 +45,7 @@ export class ApplicationProducerService implements OnModuleInit {
   async publishAcceptedApplication(application: ApplicationResponseDTO) {
     const exchange = this.configService.get<string>('APPLICATION_EXCHANGE');
     const routingKey = 'application.accepted';
+    console.log("RABBITMQ ", exchange, routingKey)
     try {
       await this.channelWrapper.publish(
         exchange,

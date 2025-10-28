@@ -13,7 +13,7 @@ import { Status } from "./status.enum";
 import { AccountService } from "src/account/account.service";
 import { MinioService } from "src/minio-s3/minio.service";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
-import { ApplicationType } from "./application.entity";
+import { Application, ApplicationType } from "./application.entity";
 import { ApplicationProducerService } from "src/application-producer/application-producer.service";
 
 
@@ -170,7 +170,7 @@ export class ApplicationController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':type/user/:id')
-  async findApplicationByUserIdAndType(
+  async findApplicationByUserIdAndApplicationType(
     @Param('type') type: string,
     @Param('id') id: string,
     @Req() req: AuthRequest
@@ -185,7 +185,7 @@ export class ApplicationController {
         throw new Error('no');
     }
     
-    const application = await this.applicationService.findByUserId(id, applicationType);
+    const application = await this.applicationService.findByUserIdAndApplicationType(id, applicationType);
     if (!application) {
       return {
         status: Status.NOT_AVAILABLE
@@ -194,6 +194,23 @@ export class ApplicationController {
     return {
       status: application.status
     };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Get('user/:id')
+  async findApplicationByUserId(
+    @Param('id') id: string,
+    @Req() req: AuthRequest
+  ): Promise<ApplicationResponseDTO> {
+    const application = await this.applicationService.findByUserId(id);
+    const user = await this.accountService.findById(id);
+    const defaultApplication: Application = new Application()
+    defaultApplication.id = 'NO APPLICATION'
+    return this.applicationService.convertToApplicationResponseDTO(
+      application && application.id ? application : defaultApplication,
+      user
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
