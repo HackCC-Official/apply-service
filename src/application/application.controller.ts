@@ -196,6 +196,23 @@ export class ApplicationController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Get('user/:id')
+  async findApplicationByUserId(
+    @Param('id') id: string,
+    @Req() req: AuthRequest
+  ): Promise<ApplicationResponseDTO> {
+    const application = await this.applicationService.findByUserId(id);
+    const user = await this.accountService.findById(id);
+    const defaultApplication: Application = new Application()
+    defaultApplication.id = 'NO APPLICATION'
+    return this.applicationService.convertToApplicationResponseDTO(
+      application && application.id ? application : defaultApplication,
+      user
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':id')
   async find(@Param('id') id: string): Promise<ApplicationResponseDTO> {
