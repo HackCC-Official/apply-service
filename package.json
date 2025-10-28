@@ -33,7 +33,7 @@
     "@nestjs/typeorm": "^11.0.0",
     "@supabase/supabase-js": "^2.49.1",
     "@types/amqplib": "^0.10.6",
-    "amqp-connection-manager": "^4.1.14",
+    "amqp-connection-manager": "^4.1.15",
     "amqplib": "^0.10.5",
     "axios": "^1.8.4",
     "class-transformer": "^0.5.1",

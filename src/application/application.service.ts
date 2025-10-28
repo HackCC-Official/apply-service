@@ -34,7 +34,11 @@ export class ApplicationService {
     return await this.applicationRepository.findOne({ where: { id }, relations: { submissions: true }})
   }
 
-  async findByUserId(id: string, type: ApplicationType): Promise<Application> {
+  async findByUserId(id: string): Promise<Application> {
+    return await this.applicationRepository.findOne({ where: { userId: id }})
+  }
+
+  async findByUserIdAndApplicationType(id: string, type: ApplicationType): Promise<Application> {
     return await this.applicationRepository.findOne({ where: { userId: id, type }, relations: { submissions: true }})
   }
 
@@ -88,7 +92,7 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
     this.logger.info({ msg: "Attempting to create application", applicationDTO })
 
     // check for existence
-    const applicationExists = await this.findByUserId(user.id, type)
+    const applicationExists = await this.findByUserIdAndApplicationType(user.id, type)
 
     if (applicationExists) {
       throw new Error('Application already exists')
