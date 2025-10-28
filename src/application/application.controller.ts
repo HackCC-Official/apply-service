@@ -13,7 +13,7 @@ import { Status } from "./status.enum";
 import { AccountService } from "src/account/account.service";
 import { MinioService } from "src/minio-s3/minio.service";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
-import { ApplicationType } from "./application.entity";
+import { Application, ApplicationType } from "./application.entity";
 import { AccountProducerService } from "src/account-producer/account-producer.service";
 
 @Controller('applications')
@@ -141,35 +141,9 @@ export class ApplicationController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
-  @Get(':type/list')
-  async findAllApplicationsByType(
-    @Param('type') type: string,
-    @Query("status") status: Status
-  ): Promise<ApplicationResponseDTO[]> {
-    const applicationType = this.validateApplicationType(type);
-    
-    const applications = await this.applicationService.findAll({ status, type: applicationType });
-    const userIds = applications.map(a => a.userId);
-    const users = userIds.length > 0 ? await this.accountService.batchFindById(userIds) : [];
-    const userMap = {};
-
-    users.forEach(u => userMap[u.id] = u);
-
-    const applicationResponseDTOs = applications.map(a => {
-      return this.applicationService.convertToApplicationResponseDTO(
-        a,
-        userMap[a.userId]
-      );
-    });
-
-    return applicationResponseDTOs;
-  }
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':type/user/:id')
-  async findApplicationByUserIdAndType(
+  async findApplicationByUserIdAndApplicationType(
     @Param('type') type: string,
     @Param('id') id: string,
     @Req() req: AuthRequest
@@ -184,7 +158,7 @@ export class ApplicationController {
         throw new Error('no');
     }
     
-    const application = await this.applicationService.findByUserId(id, applicationType);
+    const application = await this.applicationService.findByUserIdAndApplicationType(id, applicationType);
     if (!application) {
       return {
         status: Status.NOT_AVAILABLE
@@ -193,6 +167,23 @@ export class ApplicationController {
     return {
       status: application.status
     };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Get('user/:id')
+  async findApplicationByUserId(
+    @Param('id') id: string,
+    @Req() req: AuthRequest
+  ): Promise<ApplicationResponseDTO> {
+    const application = await this.applicationService.findByUserId(id);
+    const user = await this.accountService.findById(id);
+    const defaultApplication: Application = new Application()
+    defaultApplication.id = 'NO APPLICATION'
+    return this.applicationService.convertToApplicationResponseDTO(
+      application && application.id ? application : defaultApplication,
+      user
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
