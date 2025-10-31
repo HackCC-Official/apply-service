@@ -45,16 +45,16 @@ export class ApplicationProducerService implements OnModuleInit {
 
   async publishAcceptedApplication(application: ApplicationResponseDTO) {
     const exchange = this.configService.get<string>('APPLICATION_EXCHANGE') || 'application.exchange';
-    const routingKey = 'application.accepted';
+    const routingKey = 'application.accept';
     try {
       await this.channelWrapper.publish(
         exchange,
         routingKey,
         Buffer.from(JSON.stringify(application)),
       );
-      this.logger.info({ application }, 'Published application.accepted message');
+      this.logger.info({ application }, 'Published application.accept message');
     } catch (error) {
-      this.logger.error({ error }, 'Error publishing application.accepted message');
+      this.logger.error({ error }, 'Error publishing application.accept message');
     }
   }
 
