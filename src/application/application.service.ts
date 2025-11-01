@@ -117,7 +117,7 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
       }
     });
 
-    if (type !== ApplicationType.JUDGE) {
+    if (![ApplicationType.JUDGE, ApplicationType.VOLUNTEER].includes(type)) {
       const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
       await this.minioService.uploadPdf(transcriptFilename, document.transcript.buffer);
       applicationDTO.transcriptUrl = transcriptFilename
