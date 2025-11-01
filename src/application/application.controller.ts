@@ -103,7 +103,7 @@ export class ApplicationController {
     
     const application = await this.applicationService.create(
       applicationDTO, 
-      { resume: applicationType === ApplicationType.HACKATHON ? undefined : files.resume[0], transcript: applicationType === ApplicationType.JUDGE ? undefined : files.transcript[0] }, 
+      { resume: applicationType === ApplicationType.HACKATHON ? undefined : files.resume[0], transcript: [ApplicationType.VOLUNTEER, ApplicationType.JUDGE].includes(applicationType) ? undefined : files.transcript[0] }, 
       applicationType,
       user
     );
