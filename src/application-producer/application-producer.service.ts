@@ -20,7 +20,7 @@ export class ApplicationProducerService implements OnModuleInit {
 
         const exchange = this.configService.get<string>('APPLICATION_EXCHANGE') || 'application.exchange';
         const queue = this.configService.get<string>('APPLICATION_QUEUE') || 'application.queue';
-        const routingKey = 'application.accepted';
+        const routingKey = 'application.accept';
 
         // Create exchange
         await channel.assertExchange(exchange, 'topic', {durable : true}); 
@@ -43,18 +43,64 @@ export class ApplicationProducerService implements OnModuleInit {
   }
 
 
-  async publishAcceptedApplication(application: ApplicationResponseDTO) {
+  async publishAcceptedHackathonApplication(application: ApplicationResponseDTO) {
     const exchange = this.configService.get<string>('APPLICATION_EXCHANGE') || 'application.exchange';
-    const routingKey = 'application.accept';
+    const routingKey = 'application.hackathon.accept';
     try {
       await this.channelWrapper.publish(
         exchange,
         routingKey,
         Buffer.from(JSON.stringify(application)),
       );
-      this.logger.info({ application }, 'Published application.accept message');
+      this.logger.info({ application }, 'Published application.hackathon.accept message');
     } catch (error) {
-      this.logger.error({ error }, 'Error publishing application.accept message');
+      this.logger.error({ error }, 'Error publishing application.hackathon.accept message');
+    }
+  }
+
+  async publishDeniedHackathonApplication(application: ApplicationResponseDTO) {
+    const exchange = this.configService.get<string>('APPLICATION_EXCHANGE') || 'application.exchange';
+    const routingKey = 'application.hackathon.deny';
+    try {
+      await this.channelWrapper.publish(
+        exchange,
+        routingKey,
+        Buffer.from(JSON.stringify(application)),
+      );
+      this.logger.info({ application }, 'Published application.hackathon.deny message');
+    } catch (error) {
+      this.logger.error({ error }, 'Error publishing application.hackathon.deny message');
+    }
+  }
+
+
+  async publishAcceptedJudgeApplication(application: ApplicationResponseDTO) {
+    const exchange = this.configService.get<string>('APPLICATION_EXCHANGE') || 'application.exchange';
+    const routingKey = 'application.judge.accept';
+    try {
+      await this.channelWrapper.publish(
+        exchange,
+        routingKey,
+        Buffer.from(JSON.stringify(application)),
+      );
+      this.logger.info({ application }, 'Published application.judge.accept message');
+    } catch (error) {
+      this.logger.error({ error }, 'Error publishing application.judge.accept message');
+    }
+  }
+
+  async publishDeniedJudgeApplication(application: ApplicationResponseDTO) {
+    const exchange = this.configService.get<string>('APPLICATION_EXCHANGE') || 'application.exchange';
+    const routingKey = 'application.judge.deny';
+    try {
+      await this.channelWrapper.publish(
+        exchange,
+        routingKey,
+        Buffer.from(JSON.stringify(application)),
+      );
+      this.logger.info({ application }, 'Published application.judge.deny message');
+    } catch (error) {
+      this.logger.error({ error }, 'Error publishing application.judge.deny message');
     }
   }
 

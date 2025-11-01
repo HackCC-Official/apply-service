@@ -121,7 +121,14 @@ export class ApplicationController {
     const application = await this.applicationService.updateStatus(id, Status.ACCEPTED);
     const user = await this.accountService.findById(application.userId);
     // send to account queue for qr-code creation
-    this.applicationProducerService.publishAcceptedApplication({...application, user});
+    switch (application.type) {
+      case ApplicationType.HACKATHON:
+        this.applicationProducerService.publishAcceptedHackathonApplication({...application, user});
+        return;
+      case ApplicationType.JUDGE:
+        this.applicationProducerService.publishAcceptedJudgeApplication({...application, user});
+        return;
+    }
     return this.applicationService.convertToApplicationResponseDTO(
       application,
       user
@@ -134,6 +141,15 @@ export class ApplicationController {
   async denyApplication(@Param('id') id: string): Promise<ApplicationResponseDTO> {
     const application = await this.applicationService.updateStatus(id, Status.DENIED);
     const user = await this.accountService.findById(application.userId);
+    switch (application.type) {
+      case ApplicationType.HACKATHON:
+        this.applicationProducerService.publishDeniedHackathonApplication({...application, user});
+        return;
+      case ApplicationType.JUDGE:
+        this.applicationProducerService.publishDeniedJudgeApplication({...application, user});
+        return;
+    }
+
     return this.applicationService.convertToApplicationResponseDTO(
       application,
       user
