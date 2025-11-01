@@ -212,12 +212,23 @@ export class ApplicationController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+  @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get('user/:id')
   async findApplicationByUserId(
     @Param('id') id: string,
     @Req() req: AuthRequest
   ): Promise<ApplicationResponseDTO> {
+    const currentUser = req.user;
+
+    const hasPermission = containsRole(currentUser.user_roles, [AccountRoles.ADMIN, AccountRoles.ORGANIZER]);
+    const isTheSameUser = id === currentUser.sub;
+
+    console.log(hasPermission, isTheSameUser)
+
+    if (!isTheSameUser && !hasPermission) {
+        throw new Error('no');
+    }
+
     const application = await this.applicationService.findByUserId(id);
     const user = await this.accountService.findById(id);
     const defaultApplication: Application = new Application()
