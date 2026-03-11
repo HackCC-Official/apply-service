@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { AccountRoles } from './role.enum';
 import { ApplicationService } from 'src/application/application.service';
-import { Status } from 'src/application/application.dto';
+import { Status } from 'src/application/status.enum';
 import { HttpService } from '@nestjs/axios';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class AttendeeGuard implements CanActivate {
     // Check if the attendee has an accepted application
     try {
       const application = await this.applicationService
-        .findHackationApplicationByUserId(user.user_metadata.sub);
+        .findByUserId(user.user_metadata.sub);
       
       if (application.status !== Status.ACCEPTED) {
         throw new ForbiddenException('Application must be accepted to access this resource');
