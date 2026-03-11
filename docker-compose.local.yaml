@@ -13,7 +13,7 @@ services:
       # Run in dev Mode: npm run start:dev
     command: npm run start:dev
     networks:
-      - hackcc-network
+      - hacksmc-network
 networks:
-  hackcc-network:
+  hacksmc-network:
     external: true
