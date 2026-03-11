@@ -1,6 +1,6 @@
 services:
   apply-service:
-    image: 'ghcr.io/hacksmc-official/apply-service:latest'
+    image: 'ghcr.io/hacksmc/apply-service:latest'
     build:
       context: .
       dockerfile: Dockerfile
