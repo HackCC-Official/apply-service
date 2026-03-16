@@ -16,6 +16,8 @@ class SubmisisonApplicationDTO {
   @IsString()
   @IsOptional()
   userId?: string;
+  @IsEnum(ApplicationType)
+  applicationType: ApplicationType;
 }
 
 export class ApplicationResponseDTO {

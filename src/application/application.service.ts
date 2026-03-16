@@ -98,6 +98,7 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
     applicationDTO.submissions.forEach(s => {
       s.userId = user.id;
       s.question = { id: s.questionId } as Question;
+      s.applicationType = type; // add this
       if (!s.questionId) throw new Error('Question is null');
       if (!this.isValidResponse(s.answer)) throw new Error('Answer is too long');
     });
