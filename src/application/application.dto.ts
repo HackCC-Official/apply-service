@@ -60,10 +60,12 @@ export class ApplicationRequestDTO {
   submissions: SubmisisonApplicationDTO[];
 
   @IsString()
-  transcriptUrl: string;
+  @IsOptional()
+  transcriptUrl?: string;
 
   @IsString()
-  resumeUrl: string;
+    @IsOptional()
+  resumeUrl?: string;
 }
 
 export class ApplicationStatistics {
