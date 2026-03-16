@@ -58,6 +58,12 @@ export class ApplicationRequestDTO {
   @ValidateNested({ each: true })
   @Type(() => SubmisisonApplicationDTO)
   submissions: SubmisisonApplicationDTO[];
+
+  @IsString()
+  transcriptUrl: string;
+
+  @IsString()
+  resumeUrl: string;
 }
 
 export class ApplicationStatistics {

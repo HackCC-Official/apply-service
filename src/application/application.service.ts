@@ -86,7 +86,7 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
   async create(
     applicationDTO: ApplicationRequestDTO,
     type: ApplicationType,
-    user: AccountDTO
+    user: AccountDTO,
   ): Promise<Application> {
     this.logger.info({ msg: "Attempting to create application", applicationDTO });
 

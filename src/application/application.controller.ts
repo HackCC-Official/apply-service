@@ -16,6 +16,7 @@ import { Application, ApplicationType } from "./application.entity";
 import { ApplicationProducerService } from "src/application-producer/application-producer.service";
 import { SupabaseAuthGuard } from "src/auth/supabase.auth.guard";
 import 'multer';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('applications')
 export class ApplicationController {
@@ -101,6 +102,21 @@ export class ApplicationController {
 
     if (!user) {
       throw new Error('User with id ' + applicationDTO.userId + ' not found.');
+    }
+
+    const resumeFile = files?.resume?.[0];
+    const transcriptFile = files?.transcript?.[0];
+
+    if (transcriptFile) {
+      const filename = `/transcripts/${uuidv4()}.pdf`;
+      await this.minioService.uploadPdf(filename, transcriptFile.buffer);
+      applicationDTO.transcriptUrl = filename;
+    }
+
+    if (resumeFile) {
+      const filename = `/resumes/${uuidv4()}.pdf`;
+      await this.minioService.uploadPdf(filename, resumeFile.buffer);
+      applicationDTO.resumeUrl = filename;
     }
     
     const application = await this.applicationService.create(
@@ -224,8 +240,6 @@ export class ApplicationController {
     const hasPermission = containsRole(currentUser.user_roles, [AccountRoles.ADMIN, AccountRoles.ORGANIZER]);
     const isTheSameUser = id === currentUser.sub;
 
-    console.log(hasPermission, isTheSameUser)
-
     if (!isTheSameUser && !hasPermission) {
         throw new Error('no');
     }
@@ -234,6 +248,7 @@ export class ApplicationController {
     const user = await this.accountService.findById(id);
     const defaultApplication: Application = new Application()
     defaultApplication.id = 'NO APPLICATION'
+
     return this.applicationService.convertToApplicationResponseDTO(
       application && application.id ? application : defaultApplication,
       user

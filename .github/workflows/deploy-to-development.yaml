@@ -58,5 +58,5 @@ jobs:
             docker compose pull
             docker compose --env-file .env up -d
 
-            cd ../spring2025
+            cd ../spring-2026
             docker compose restart

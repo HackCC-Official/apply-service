@@ -33,4 +33,7 @@ export class Application {
 
   @OneToMany(() => Submission, (submission) => submission.application, { cascade: true })
   submissions: Submission[];
+
+  @Column()
+  isFile: boolean = false;
 }
