@@ -16,28 +16,16 @@ export class Question {
     @Column()
     position: number;
 
-    @Column({ nullable: true })
-    description: string;
-
     @Column()
     type: QuestionType;
 
     @Column('text', { array: true, nullable: true })
     possibleAnswers?: string[];
 
-    @Column({ nullable: true })
-    isApplicationField?: boolean;
-
-    @Column({ nullable: true })
-    applicationField?: string;
-
     @ManyToOne(() => QuestionGroup, (questionGroup) => questionGroup.questions)
     @JoinColumn({ name: 'groupId' })
     @Exclude()
     group?: QuestionGroup;
-
-    @Column({ nullable: true })
-    isSingleLabel?: boolean;
 
     @Column({ nullable: true })
     placeholder: string;

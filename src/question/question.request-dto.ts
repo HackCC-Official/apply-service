@@ -16,13 +16,6 @@ export class QuestionRequestDto {
     })
     position: number;
 
-    @IsOptional()    
-    @IsString()
-    @ApiProperty({
-        description: "A description of the purpose of this question."
-    })
-    description?: string
-
     @IsEnum(QuestionType)
     type: QuestionType;
 
@@ -30,18 +23,6 @@ export class QuestionRequestDto {
     @IsArray()
     @Type(() => String)
     possibleAnswers?: string[];
-
-    @IsOptional()
-    @IsBoolean()
-    isApplicationField?: boolean;
-
-    @IsOptional()
-    @IsString()
-    applicationField?: string;
-
-    @IsOptional()
-    @IsString()
-    isSingleLabel?: boolean;
 
     @IsOptional()
     @IsString()

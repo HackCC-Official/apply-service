@@ -13,10 +13,6 @@ export class QuestionResponseDto {
     @IsNumber()
     position: number;
 
-    @IsOptional()
-    @IsString()
-    description?: string
-
     @IsEnum(QuestionType)
     type: QuestionType;
 
@@ -24,18 +20,6 @@ export class QuestionResponseDto {
     @IsArray()
     @Type(() => String)
     possibleAnswers?: string[];
-
-    @IsOptional()
-    @IsBoolean()
-    isApplicationField?: boolean;
-
-    @IsOptional()
-    @IsString()
-    applicationField?: string;
-
-    @IsOptional()
-    @IsString()
-    isSingleLabel?: boolean;
 
     @IsOptional()
     @IsString()
