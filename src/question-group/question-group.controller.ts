@@ -7,6 +7,7 @@ import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { SupabaseAuthGuard } from 'src/auth/supabase.auth.guard';
 import { QuestionGroupService } from './question-group.service';
+import { ApplicationType } from 'src/application/application.entity';
 
 @Controller('question-groups')
 export class QuestionGroupController {
@@ -26,6 +27,27 @@ export class QuestionGroupController {
     @Get()
     findAll(): Promise<QuestionGroupResponseDto[]> {
         return this.questionGroupService.findAll();
+    }
+
+    @UseGuards(SupabaseAuthGuard, RolesGuard)
+    @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+    @Get('hackathon')
+    findAllHackathon(): Promise<QuestionGroupResponseDto[]> {
+        return this.questionGroupService.findAllByType(ApplicationType.HACKATHON);
+    }
+
+    @UseGuards(SupabaseAuthGuard, RolesGuard)
+    @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+    @Get('organizer')
+    findAllOrganizer(): Promise<QuestionGroupResponseDto[]> {
+        return this.questionGroupService.findAllByType(ApplicationType.ORGANIZER);
+    }
+
+    @UseGuards(SupabaseAuthGuard, RolesGuard)
+    @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
+    @Get('judge')
+    findAllJudge(): Promise<QuestionGroupResponseDto[]> {
+        return this.questionGroupService.findAllByType(ApplicationType.JUDGE);
     }
 
     @UseGuards(SupabaseAuthGuard, RolesGuard)

@@ -5,6 +5,7 @@ import { QuestionGroup } from './question-group.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { QuestionGroupRequestDto } from './question-group.request-dto';
 import { QuestionGroupResponseDto } from './question-group.response-dto';
+import { ApplicationType } from 'src/application/application.entity';
 
 @Injectable()
 export class QuestionGroupService {
@@ -28,11 +29,16 @@ export class QuestionGroupService {
         });
     }
 
-    create(questionGroup: QuestionGroupRequestDto): Promise<QuestionGroupResponseDto> {
-        return this.questionGroupRepository.save(questionGroup);
+    async create(questionGroup: QuestionGroupRequestDto): Promise<QuestionGroup> {
+        const entity = this.questionGroupRepository.create(questionGroup);
+        return this.questionGroupRepository.save(entity);
     }
 
     delete(id: number): Promise<UpdateResult> {
         return this.questionGroupRepository.softDelete(id);
     }
+
+    findAllByType(applicationType: ApplicationType): Promise<QuestionGroupResponseDto[]> {
+      return this.questionGroupRepository.find({ where: { applicationType } });
+  }
 }

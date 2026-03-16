@@ -85,69 +85,26 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
 
   async create(
     applicationDTO: ApplicationRequestDTO,
-    document: Document, 
     type: ApplicationType,
     user: AccountDTO
-  ) : Promise<Application> {
-    this.logger.info({ msg: "Attempting to create application", applicationDTO })
+  ): Promise<Application> {
+    this.logger.info({ msg: "Attempting to create application", applicationDTO });
 
-    // check for existence
-    const applicationExists = await this.findByUserIdAndApplicationType(user.id, type)
+    const applicationExists = await this.findByUserIdAndApplicationType(user.id, type);
+    if (applicationExists) throw new Error('Application already exists');
 
-    if (applicationExists) {
-      throw new Error('Application already exists')
-    }
-
-    // give application a UUID
     applicationDTO.id = uuidv4();
-    // default set status to under reveiw
     applicationDTO.status = Status.SUBMITTED;
 
-    // set each userId in submission to the user id
-    applicationDTO.submissions.forEach(async s => {
+    applicationDTO.submissions.forEach(s => {
       s.userId = user.id;
       s.question = { id: s.questionId } as Question;
-
-      if (!s.questionId) {
-        throw new Error('Question is null')
-      }
-
-      if (!this.isValidResponse(s.answer)) {
-        throw new Error('Answer is too long')
-      }
+      if (!s.questionId) throw new Error('Question is null');
+      if (!this.isValidResponse(s.answer)) throw new Error('Answer is too long');
     });
 
-    if (![ApplicationType.JUDGE, ApplicationType.VOLUNTEER].includes(type)) {
-      const transcriptFilename = '/transcripts/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
-      await this.minioService.uploadPdf(transcriptFilename, document.transcript.buffer);
-      applicationDTO.transcriptUrl = transcriptFilename
-    } else {
-      applicationDTO.transcriptUrl = ''
-    }
-
-    if (type !== ApplicationType.HACKATHON) {
-      const resumeFilename = '/resumes/' + this.generateFilename(applicationDTO.id, applicationDTO.userId, 'pdf');
-      await this.minioService.uploadPdf(resumeFilename, document.resume.buffer);
-      applicationDTO.resumeUrl = resumeFilename;
-    } else {
-      applicationDTO.resumeUrl = ''
-    }
-
-    const application = await this.applicationRepository.save({
-      ...applicationDTO,
-      type
-    })
-
-    this.logger.info({ msg: "Application created", application })
-
-    await this.accountService.update(
-      applicationDTO.userId, 
-      {
-        id: '',
-        firstName: application.firstName,
-        lastName: applicationDTO.lastName
-      }
-    )
+    const application = await this.applicationRepository.save({ ...applicationDTO, type });
+    this.logger.info({ msg: "Application created", application });
 
     return application;
   }
@@ -177,17 +134,11 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
   convertToApplicationResponseDTO(application: Application, user: AccountDTO): ApplicationResponseDTO {
     return {
       id: application.id,
-      firstName: application.firstName,
-      lastName: application.lastName,
       user,
       status: application.status,
-      email: application.email,
-      phoneNumber: application.phoneNumber,
-      school: application.school,
+      reviewerId: application.reviewerId,
       submissions: application.submissions,
-      transcriptUrl: application.transcriptUrl,
-      resumeUrl: application.resumeUrl,
       type: application.type
-    }
+    };
   }
 }

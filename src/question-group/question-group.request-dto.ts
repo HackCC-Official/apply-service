@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsString } from "class-validator";
+import { IsEnum, IsNumber, IsString } from "class-validator";
+import { ApplicationType } from "src/application/application.entity";
 
 export class QuestionGroupRequestDto {
     @IsString()
@@ -7,6 +8,10 @@ export class QuestionGroupRequestDto {
         description: "The name of the question group"
     })
     name: string;
+
+
+    @IsEnum(ApplicationType)
+    applicationType: ApplicationType;
 
     @IsNumber()
     @ApiProperty({

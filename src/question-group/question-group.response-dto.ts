@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
-import { IsArray, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { ApplicationType } from "src/application/application.entity";
 import { QuestionResponseDto } from "src/question/question.response-dto";
 
 export class QuestionGroupResponseDto {
@@ -16,4 +17,7 @@ export class QuestionGroupResponseDto {
     @IsArray()
     @Type(() => QuestionResponseDto)
     questions?: QuestionResponseDto[];
+
+    @IsEnum(ApplicationType)
+    applicationType: ApplicationType;
 }

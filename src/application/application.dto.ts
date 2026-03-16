@@ -31,22 +31,7 @@ export class ApplicationResponseDTO {
 
   @IsEnum(Status)
   status: Status;
-
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
-
-  @IsString()
-  email: string;
-
-  @IsString()
-  phoneNumber: string;
-
-  @IsString()
-  school: string;
-
+  
   @IsOptional()
   @IsUUID()
   reviewerId?: string;
@@ -56,14 +41,6 @@ export class ApplicationResponseDTO {
   @ValidateNested({ each: true })
   @Type(() => SubmisisonApplicationDTO)
   submissions: SubmisisonApplicationDTO[];
-
-  @IsOptional()
-  @IsString()
-  transcriptUrl: string;
-
-  @IsOptional()
-  @IsString()
-  resumeUrl: string;
 
   @IsEnum(ApplicationType)
   type: ApplicationType;
@@ -80,21 +57,6 @@ export class ApplicationRequestDTO {
   @IsEnum(Status)
   status: Status;
 
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
-
-  @IsString()
-  email: string;
-
-  @IsString()
-  phoneNumber: string;
-
-  @IsString()
-  school: string;
-
   @IsOptional()
   @IsUUID()
   reviewerId?: string;
@@ -104,14 +66,6 @@ export class ApplicationRequestDTO {
   @ValidateNested({ each: true })
   @Type(() => SubmisisonApplicationDTO)
   submissions: SubmisisonApplicationDTO[];
-
-  @IsOptional()
-  @IsString()
-  transcriptUrl: string;
-
-  @IsOptional()
-  @IsString()
-  resumeUrl: string;
 }
 
 export class ApplicationStatistics {
