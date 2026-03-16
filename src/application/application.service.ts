@@ -94,7 +94,6 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
     if (applicationExists) throw new Error('Application already exists');
 
     applicationDTO.id = uuidv4();
-    applicationDTO.status = Status.SUBMITTED;
 
     applicationDTO.submissions.forEach(s => {
       s.userId = user.id;
@@ -103,7 +102,7 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
       if (!this.isValidResponse(s.answer)) throw new Error('Answer is too long');
     });
 
-    const application = await this.applicationRepository.save({ ...applicationDTO, type });
+    const application = await this.applicationRepository.save({ ...applicationDTO, type, status: Status.SUBMITTED });
     this.logger.info({ msg: "Application created", application });
 
     return application;
