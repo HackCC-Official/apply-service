@@ -54,13 +54,6 @@ export class ApplicationRequestDTO {
   @IsUUID()
   userId: string;
 
-  @IsEnum(Status)
-  status: Status;
-
-  @IsOptional()
-  @IsUUID()
-  reviewerId?: string;
-
   @Transform(({ value }) => JSON.parse(value))
   @IsArray()
   @ValidateNested({ each: true })
