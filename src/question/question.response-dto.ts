@@ -10,6 +10,9 @@ export class QuestionResponseDto {
     @IsString()
     prompt : string
 
+    @IsNumber()
+    position: number;
+
     @IsOptional()
     @IsString()
     description?: string
@@ -29,10 +32,6 @@ export class QuestionResponseDto {
     @IsOptional()
     @IsString()
     applicationField?: string;
-
-    @IsOptional()
-    @IsString()
-    group?: string
 
     @IsOptional()
     @IsString()

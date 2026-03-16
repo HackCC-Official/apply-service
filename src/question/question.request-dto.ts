@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { QuestionType } from "./question-type.enum";
 
 export class QuestionRequestDto {
@@ -9,6 +9,12 @@ export class QuestionRequestDto {
         description: "The prompt for the question"
     })
     prompt : string
+
+    @IsNumber()
+    @ApiProperty({
+        description: "The position number for the question within a question group"
+    })
+    position: number;
 
     @IsOptional()    
     @IsString()
@@ -32,10 +38,6 @@ export class QuestionRequestDto {
     @IsOptional()
     @IsString()
     applicationField?: string;
-
-    @IsOptional()
-    @IsString()
-    group?: string
 
     @IsOptional()
     @IsString()
