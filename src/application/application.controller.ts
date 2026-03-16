@@ -98,13 +98,13 @@ export class ApplicationController {
     const applicationType = this.validateApplicationType(type);
     
     const user = await this.accountService.findById(applicationDTO.userId);
+
     if (!user) {
       throw new Error('User with id ' + applicationDTO.userId + ' not found.');
     }
     
     const application = await this.applicationService.create(
       applicationDTO, 
-      { resume: applicationType === ApplicationType.HACKATHON ? undefined : files.resume[0], transcript: [ApplicationType.VOLUNTEER, ApplicationType.JUDGE].includes(applicationType) ? undefined : files.transcript[0] }, 
       applicationType,
       user
     );
