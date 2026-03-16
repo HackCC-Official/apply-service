@@ -39,6 +39,6 @@ export class QuestionGroupService {
     }
 
     findAllByType(applicationType: ApplicationType): Promise<QuestionGroupResponseDto[]> {
-      return this.questionGroupRepository.find({ where: { applicationType } });
+      return this.questionGroupRepository.find({ where: { applicationType }, relations: { questions: true } });
   }
 }

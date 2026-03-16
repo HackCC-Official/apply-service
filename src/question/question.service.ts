@@ -22,7 +22,6 @@ export class QuestionService {
     create(question : QuestionRequestDto[], applicationType: ApplicationType) : Promise<QuestionResponseDto[]> {
         return this.questionRepository.save(question.map(q => ({ ...q, applicationType })));
     }
-    
     delete(id : number) : Promise<UpdateResult> {
         return this.questionRepository.softDelete(id);
     }
