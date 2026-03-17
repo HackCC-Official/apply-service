@@ -17,7 +17,7 @@ export class QuestionService {
         return this.questionRepository.findOneBy({ id })
     }
     findAll(applicationType: ApplicationType) : Promise<QuestionResponseDto[]> {
-        return this.questionRepository.find({ where: { applicationType }, order: { id: 'ASC' }});
+        return this.questionRepository.find({ where: { applicationType }, order: { position: 'ASC' }});
     }
     create(question : QuestionRequestDto[], applicationType: ApplicationType) : Promise<QuestionResponseDto[]> {
         return this.questionRepository.save(question.map(q => ({ ...q, applicationType })));

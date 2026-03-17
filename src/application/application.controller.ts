@@ -2,7 +2,6 @@ import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, 
 import { ApplicationService } from "./application.service";
 import { ApplicationRequestDTO, ApplicationResponseDTO, ApplicationStatistics } from "./application.dto";
 import { DeleteResult } from "typeorm";
-import { JwtAuthGuard } from "src/auth/jwt.auth.guard";
 import { AccountRoles } from "src/auth/role.enum";
 import { Roles } from "src/auth/roles.decorator";
 import { RolesGuard } from "src/auth/roles.guard";
@@ -15,6 +14,9 @@ import { MinioService } from "src/minio-s3/minio.service";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { Application, ApplicationType } from "./application.entity";
 import { ApplicationProducerService } from "src/application-producer/application-producer.service";
+import { SupabaseAuthGuard } from "src/auth/supabase.auth.guard";
+import 'multer';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('applications')
 export class ApplicationController {
@@ -39,7 +41,7 @@ export class ApplicationController {
   }
 
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(":type/stats/")
   async getStats(@Param("type") type?: string): Promise<ApplicationStatistics> {
@@ -52,7 +54,7 @@ export class ApplicationController {
     return this.applicationService.getStatistics(applicationType);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @UseInterceptors(FileFieldsInterceptor(
     [
@@ -97,13 +99,28 @@ export class ApplicationController {
     const applicationType = this.validateApplicationType(type);
     
     const user = await this.accountService.findById(applicationDTO.userId);
+
     if (!user) {
       throw new Error('User with id ' + applicationDTO.userId + ' not found.');
+    }
+
+    const resumeFile = files?.resume?.[0];
+    const transcriptFile = files?.transcript?.[0];
+
+    if (transcriptFile) {
+      const filename = `/transcripts/${uuidv4()}.pdf`;
+      await this.minioService.uploadPdf(filename, transcriptFile.buffer);
+      applicationDTO.transcriptUrl = filename;
+    }
+
+    if (resumeFile) {
+      const filename = `/resumes/${uuidv4()}.pdf`;
+      await this.minioService.uploadPdf(filename, resumeFile.buffer);
+      applicationDTO.resumeUrl = filename;
     }
     
     const application = await this.applicationService.create(
       applicationDTO, 
-      { resume: applicationType === ApplicationType.HACKATHON ? undefined : files.resume[0], transcript: [ApplicationType.VOLUNTEER, ApplicationType.JUDGE].includes(applicationType) ? undefined : files.transcript[0] }, 
       applicationType,
       user
     );
@@ -114,7 +131,7 @@ export class ApplicationController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Put(':id/accept')
   async acceptApplication(@Param('id') id: string): Promise<ApplicationResponseDTO> {
@@ -135,7 +152,7 @@ export class ApplicationController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Put(':id/deny')
   async denyApplication(@Param('id') id: string): Promise<ApplicationResponseDTO> {
@@ -156,7 +173,7 @@ export class ApplicationController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':type/list')
   async findAllApplicationsByType(
@@ -182,7 +199,7 @@ export class ApplicationController {
     return applicationResponseDTOs;
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':type/user/:id')
   async findApplicationByUserIdAndApplicationType(
@@ -211,7 +228,7 @@ export class ApplicationController {
     };
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.USER, AccountRoles.JUDGE, AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get('user/:id')
   async findApplicationByUserId(
@@ -223,8 +240,6 @@ export class ApplicationController {
     const hasPermission = containsRole(currentUser.user_roles, [AccountRoles.ADMIN, AccountRoles.ORGANIZER]);
     const isTheSameUser = id === currentUser.sub;
 
-    console.log(hasPermission, isTheSameUser)
-
     if (!isTheSameUser && !hasPermission) {
         throw new Error('no');
     }
@@ -233,13 +248,14 @@ export class ApplicationController {
     const user = await this.accountService.findById(id);
     const defaultApplication: Application = new Application()
     defaultApplication.id = 'NO APPLICATION'
+
     return this.applicationService.convertToApplicationResponseDTO(
       application && application.id ? application : defaultApplication,
       user
     );
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':id')
   async find(@Param('id') id: string): Promise<ApplicationResponseDTO> {
@@ -253,7 +269,7 @@ export class ApplicationController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Delete(':id')
   delete(@Param('id') id: string): Promise<DeleteResult> {
