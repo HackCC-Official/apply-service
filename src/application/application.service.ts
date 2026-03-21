@@ -131,7 +131,7 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
   }
   
 
-  convertToApplicationResponseDTO(application: Application, user: AccountDTO): ApplicationResponseDTO {
+  convertToApplicationResponseDTO(application: Application, user: AccountDTO, includeSubmissions = true): ApplicationResponseDTO {
     const find = (name: string) =>
       application.submissions?.find((s) => s.question?.name === name)?.answer;
 
