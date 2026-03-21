@@ -5,6 +5,7 @@ import { Repository, UpdateResult } from 'typeorm';
 import { QuestionRequestDto } from './question.request-dto';
 import { QuestionResponseDto } from './question.response-dto';
 import { ApplicationType } from 'src/application/application.entity';
+import { ApplicationResponseDTO } from 'src/application/application.dto';
 
 @Injectable()
 export class QuestionService {

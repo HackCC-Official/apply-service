@@ -31,7 +31,7 @@ export class ApplicationService {
   ) {}
 
   async findById(id: string): Promise<Application> {
-    return await this.applicationRepository.findOne({ where: { id }, relations: { submissions: true }})
+    return await this.applicationRepository.findOne({ where: { id }, relations: { submissions: { question: true }}})
   }
 
   async findByUserId(id: string): Promise<Application> {
@@ -39,14 +39,14 @@ export class ApplicationService {
   }
 
   async findByUserIdAndApplicationType(id: string, type: ApplicationType): Promise<Application> {
-    return await this.applicationRepository.findOne({ where: { userId: id, type }, relations: { submissions: true }})
+    return await this.applicationRepository.findOne({ where: { userId: id, type }, relations: { submissions: { question: true }}})
   }
 
   async findAll({ type, status } : { type: ApplicationType, status : Status }) : Promise<Application[]> {
     if (!status) {
-      return await this.applicationRepository.find({ where: { type}, relations: { submissions: true }});
+      return await this.applicationRepository.find({ where: { type}, relations: { submissions: { question: true }}});
     }
-    return await this.applicationRepository.find({ where: { type, status }, relations: { submissions: true }});
+    return await this.applicationRepository.find({ where: { type, status }, relations: { submissions: { question: true }}});
   }
 
 async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStatistics> {
@@ -132,13 +132,23 @@ async getStatistics(applicationType?: ApplicationType): Promise<ApplicationStati
   
 
   convertToApplicationResponseDTO(application: Application, user: AccountDTO): ApplicationResponseDTO {
+    const find = (name: string) =>
+      application.submissions?.find((s) => s.question?.name === name)?.answer;
+
     return {
       id: application.id,
       user,
       status: application.status,
       reviewerId: application.reviewerId,
       submissions: application.submissions,
-      type: application.type
+      type: application.type,
+      firstName: find("firstName"),
+      lastName: find("lastName"),
+      email: find("email"),
+      phoneNumber: find("phoneNumber"),
+      school: find("school"),
+      discordUsername: find("discordUsername"),
+      residence: find("residence"),
     };
   }
 }
