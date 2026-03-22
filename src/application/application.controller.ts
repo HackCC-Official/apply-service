@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, Query, Req, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseUUIDPipe, Post, Put, Query, Req, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApplicationService } from "./application.service";
 import { ApplicationRequestDTO, ApplicationResponseDTO, ApplicationStatistics } from "./application.dto";
 import { DeleteResult } from "typeorm";
@@ -192,7 +192,8 @@ export class ApplicationController {
     const applicationResponseDTOs = applications.map(a => {
       return this.applicationService.convertToApplicationResponseDTO(
         a,
-        userMap[a.userId]
+        userMap[a.userId],
+        false
       );
     });
 
@@ -258,7 +259,7 @@ export class ApplicationController {
   @UseGuards(SupabaseAuthGuard, RolesGuard)
   @Roles([AccountRoles.ADMIN, AccountRoles.ORGANIZER])
   @Get(':id')
-  async find(@Param('id') id: string): Promise<ApplicationResponseDTO> {
+  async find(@Param('id', new ParseUUIDPipe()) id: string): Promise<ApplicationResponseDTO> {
     const application = await this.applicationService.findById(id);
     const user = await this.accountService.findById(application.userId);
     application.resumeUrl = application.resumeUrl ? await this.minioService.generatePresignedURL(application.resumeUrl) : '';

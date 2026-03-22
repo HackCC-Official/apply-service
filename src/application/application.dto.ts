@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsNumber, IsOptional, isString, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsArray, IsEmail, IsEnum, IsNumber, IsOptional, IsPhoneNumber, isString, IsString, IsUUID, ValidateNested } from "class-validator";
 import { Status } from "./status.enum";
 import { Transform, Type } from "class-transformer";
 import { AccountDTO } from "src/account/account.dto";
@@ -43,6 +43,34 @@ export class ApplicationResponseDTO {
 
   @IsEnum(ApplicationType)
   type: ApplicationType;
+
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsPhoneNumber()
+  phoneNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  school?: string;
+
+  @IsOptional()
+  @IsString()
+  discordUsername?: string;
+
+  @IsOptional()
+  @IsString()
+  residence?: string;
 }
 
 export class ApplicationRequestDTO {
