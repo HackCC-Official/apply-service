@@ -19,32 +19,11 @@ export class Application {
   @Column()
   status: Status;
 
-  @Column()
-  firstName: string;
-  
-  @Column()
-  lastName: string;
-
-  @Column()
-  email: string;
-
-  @Column()
-  phoneNumber: string;
-
-  @Column()
-  school: string;
-
   @Column({ nullable: true })
   reviewerId: string;
 
-  @OneToMany(
-    () => Submission, 
-    (submission) => submission.application, 
-    {
-      cascade: true
-    }
-  )
-  submissions: Submission[];
+  @Column()
+  type: ApplicationType;
 
   @Column({ nullable: true })
   transcriptUrl: string;
@@ -52,6 +31,6 @@ export class Application {
   @Column({ nullable: true })
   resumeUrl: string;
 
-  @Column()
-  type: ApplicationType
+  @OneToMany(() => Submission, (submission) => submission.application, { cascade: true })
+  submissions: Submission[];
 }

@@ -10,7 +10,7 @@ export class TokenInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
     const token = request.headers['authorization']; // Extract the token
-    
+
     if (token) {
       // Set the token in the Axios default headers
       this.httpService.axiosRef.defaults.headers.common['Authorization'] = token;

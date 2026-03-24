@@ -21,6 +21,8 @@ import { TokenInterceptor } from './auth/token.interceptor';
 import { HttpModule } from '@nestjs/axios';
 import { LoggerModule } from 'nestjs-pino';
 import { ApplicationProducerModule } from './application-producer/application-producer.module';
+import { QuestionGroupModule } from './question-group/question-group.module';
+import { QuestionGroup } from './question-group/question-group.entity';
 
 @Module({
     providers: [
@@ -52,12 +54,13 @@ import { ApplicationProducerModule } from './application-producer/application-pr
                 username: configService.get<string>('DATABASE_USERNAME'),
                 password: configService.get<string>('DATABASE_PASSWORD'),
                 database: configService.get<string>('DATABASE_DB'),
-                entities: [Application, Question, Submission],
+                entities: [Application, Question, Submission, QuestionGroup],
                 synchronize: false,
                 migrationsRun: false,
             }),
             inject: [ConfigService],
         }),
+        QuestionGroupModule,
         SubmissionModule,
         QuestionModule,
         ApplicationModule,

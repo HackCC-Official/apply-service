@@ -48,7 +48,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             docker system prune -a --volumes
-            docker network create hackcc-network
+            docker network create hacksmc-network
             cd apply-service
 
             touch .env
@@ -58,5 +58,5 @@ jobs:
             docker compose pull
             docker compose --env-file .env up -d
 
-            cd ../spring2025
+            cd ../spring-2026
             docker compose restart

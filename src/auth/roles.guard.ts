@@ -7,16 +7,13 @@ import { AccountRoles } from './role.enum';
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get(Roles, context.getHandler());
+canActivate(context: ExecutionContext): boolean {
+  const roles = this.reflector.get(Roles, context.getHandler());
+  if (!roles) return true;
 
-    if (!roles) {
-      return true;
-    }
+  const request = context.switchToHttp().getRequest();
+  const user = request.user;
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-
-    return user && user.user_roles ? user.user_roles.find((r: AccountRoles) => roles.find(routeRole => routeRole === r)) : false
-  }
+  return !!(user?.user_roles?.some((r: AccountRoles) => roles.includes(r)));
+}
 }

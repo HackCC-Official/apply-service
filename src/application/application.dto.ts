@@ -1,15 +1,12 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsEnum, IsOptional, isString, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsArray, IsEmail, IsEnum, IsNumber, IsOptional, IsPhoneNumber, isString, IsString, IsUUID, ValidateNested } from "class-validator";
 import { Status } from "./status.enum";
 import { Transform, Type } from "class-transformer";
-import { SubmissionResponseDto } from "src/submission/submission.response-dto";
-import { SubmissionRequestDto } from "src/submission/submission.request-dto";
 import { AccountDTO } from "src/account/account.dto";
 import { Question } from "src/question/question.entity";
 import { ApplicationType } from "./application.entity";
 
 class SubmisisonApplicationDTO {
-  @IsString()
+  @IsNumber()
   @IsOptional()
   questionId?: number;
   @IsOptional()
@@ -19,6 +16,8 @@ class SubmisisonApplicationDTO {
   @IsString()
   @IsOptional()
   userId?: string;
+  @IsEnum(ApplicationType)
+  applicationType: ApplicationType;
 }
 
 export class ApplicationResponseDTO {
@@ -31,42 +30,47 @@ export class ApplicationResponseDTO {
 
   @IsEnum(Status)
   status: Status;
-
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
-
-  @IsString()
-  email: string;
-
-  @IsString()
-  phoneNumber: string;
-
-  @IsString()
-  school: string;
-
+  
   @IsOptional()
   @IsUUID()
   reviewerId?: string;
 
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SubmisisonApplicationDTO)
   submissions: SubmisisonApplicationDTO[];
 
-  @IsOptional()
-  @IsString()
-  transcriptUrl: string;
-
-  @IsOptional()
-  @IsString()
-  resumeUrl: string;
-
   @IsEnum(ApplicationType)
   type: ApplicationType;
+
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsPhoneNumber()
+  phoneNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  school?: string;
+
+  @IsOptional()
+  @IsString()
+  discordUsername?: string;
+
+  @IsOptional()
+  @IsString()
+  residence?: string;
 }
 
 export class ApplicationRequestDTO {
@@ -77,41 +81,19 @@ export class ApplicationRequestDTO {
   @IsUUID()
   userId: string;
 
-  @IsEnum(Status)
-  status: Status;
-
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
-
-  @IsString()
-  email: string;
-
-  @IsString()
-  phoneNumber: string;
-
-  @IsString()
-  school: string;
-
-  @IsOptional()
-  @IsUUID()
-  reviewerId?: string;
-
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SubmisisonApplicationDTO)
   submissions: SubmisisonApplicationDTO[];
 
-  @IsOptional()
   @IsString()
-  transcriptUrl: string;
+  @IsOptional()
+  transcriptUrl?: string;
 
-  @IsOptional()
   @IsString()
-  resumeUrl: string;
+    @IsOptional()
+  resumeUrl?: string;
 }
 
 export class ApplicationStatistics {

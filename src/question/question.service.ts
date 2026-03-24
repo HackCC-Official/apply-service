@@ -5,6 +5,7 @@ import { Repository, UpdateResult } from 'typeorm';
 import { QuestionRequestDto } from './question.request-dto';
 import { QuestionResponseDto } from './question.response-dto';
 import { ApplicationType } from 'src/application/application.entity';
+import { ApplicationResponseDTO } from 'src/application/application.dto';
 
 @Injectable()
 export class QuestionService {
@@ -17,7 +18,7 @@ export class QuestionService {
         return this.questionRepository.findOneBy({ id })
     }
     findAll(applicationType: ApplicationType) : Promise<QuestionResponseDto[]> {
-        return this.questionRepository.find({ where: { applicationType }, order: { id: 'ASC' }});
+        return this.questionRepository.find({ where: { applicationType }, order: { position: 'ASC' }});
     }
     create(question : QuestionRequestDto[], applicationType: ApplicationType) : Promise<QuestionResponseDto[]> {
         return this.questionRepository.save(question.map(q => ({ ...q, applicationType })));
